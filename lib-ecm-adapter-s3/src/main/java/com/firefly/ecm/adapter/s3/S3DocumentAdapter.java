@@ -98,6 +98,28 @@ public class S3DocumentAdapter implements DocumentPort {
                 properties.getBucketName(), properties.getPathPrefix());
     }
 
+    /**
+     * Creates a new document in Amazon S3 with both metadata and content.
+     *
+     * <p>This method handles the complete document creation process in S3:</p>
+     * <ul>
+     *   <li>Generates a unique document ID if not provided</li>
+     *   <li>Stores the document content as an S3 object</li>
+     *   <li>Stores document metadata as S3 object metadata and tags</li>
+     *   <li>Organizes documents using folder-based key prefixes</li>
+     *   <li>Calculates and stores content checksums for integrity verification</li>
+     * </ul>
+     *
+     * <p>The S3 object key is constructed using the folder hierarchy and document ID
+     * to provide logical organization and efficient retrieval.</p>
+     *
+     * @param document the document metadata to create; ID may be null for auto-generation
+     * @param content the binary content of the document
+     * @return a Mono containing the created document with assigned ID and S3 metadata
+     * @throws IllegalArgumentException if document or content is null
+     * @throws RuntimeException if S3 operations fail or bucket is not accessible
+     * @see Document
+     */
     @Override
     public Mono<Document> createDocument(Document document, byte[] content) {
         Mono<Document> operation = Mono.fromCallable(() -> {
@@ -141,6 +163,25 @@ public class S3DocumentAdapter implements DocumentPort {
                 .doOnError(throwable -> log.error("Document creation failed after all resilience attempts: {}", throwable.getMessage()));
     }
 
+    /**
+     * Retrieves a document by its unique identifier from Amazon S3.
+     *
+     * <p>This method locates and retrieves document metadata from S3:</p>
+     * <ul>
+     *   <li>Searches for the S3 object using the document ID</li>
+     *   <li>Retrieves object metadata and tags</li>
+     *   <li>Constructs the Document entity from S3 metadata</li>
+     *   <li>Returns the document without binary content (metadata only)</li>
+     * </ul>
+     *
+     * <p>The binary content can be retrieved separately using the DocumentContentPort.</p>
+     *
+     * @param documentId the unique UUID identifier of the document
+     * @return a Mono containing the document metadata if found, empty Mono if not found
+     * @throws IllegalArgumentException if documentId is null
+     * @throws RuntimeException if S3 operations fail
+     * @see com.firefly.core.ecm.port.document.DocumentContentPort#getContent(UUID)
+     */
     @Override
     public Mono<Document> getDocument(UUID documentId) {
         return Mono.fromCallable(() -> {
