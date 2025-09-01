@@ -122,6 +122,29 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
         log.info("AdobeSignSignatureEnvelopeAdapter initialized with base URL: {}", properties.getBaseUrl());
     }
 
+    /**
+     * Creates a new signature envelope in Adobe Sign.
+     *
+     * <p>This method creates a new agreement in Adobe Sign with the provided envelope details.
+     * The implementation:</p>
+     * <ul>
+     *   <li>Generates a unique envelope ID if not provided</li>
+     *   <li>Creates an Adobe Sign agreement with documents and participants</li>
+     *   <li>Maps the ECM envelope ID to the Adobe Sign agreement ID</li>
+     *   <li>Returns the created envelope with updated metadata</li>
+     * </ul>
+     *
+     * <p>The envelope must contain valid document IDs and signature requests.
+     * Documents are retrieved from the configured document storage and uploaded
+     * to Adobe Sign as part of the agreement creation process.</p>
+     *
+     * @param envelope the signature envelope to create, containing documents and signature requests
+     * @return a Mono containing the created envelope with assigned ID and Adobe Sign metadata
+     * @throws IllegalArgumentException if envelope is null or contains invalid data
+     * @throws RuntimeException if Adobe Sign API call fails or documents cannot be retrieved
+     * @see SignatureEnvelope
+     * @see SignatureRequest
+     */
     @Override
     public Mono<SignatureEnvelope> createEnvelope(SignatureEnvelope envelope) {
         return ensureValidAccessToken()
@@ -170,6 +193,24 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     envelope.getId(), error));
     }
 
+    /**
+     * Retrieves a signature envelope by its unique identifier.
+     *
+     * <p>This method fetches envelope details from Adobe Sign using the mapped agreement ID.
+     * The implementation:</p>
+     * <ul>
+     *   <li>Looks up the Adobe Sign agreement ID using the envelope ID mapping</li>
+     *   <li>Retrieves agreement details from Adobe Sign API</li>
+     *   <li>Converts Adobe Sign agreement data to ECM envelope format</li>
+     *   <li>Returns the envelope with current status and metadata</li>
+     * </ul>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to retrieve
+     * @return a Mono containing the envelope if found, empty Mono if not found
+     * @throws IllegalArgumentException if envelopeId is null
+     * @throws RuntimeException if the envelope mapping is not found or Adobe Sign API call fails
+     * @see SignatureEnvelope
+     */
     @Override
     public Mono<SignatureEnvelope> getEnvelope(UUID envelopeId) {
         return ensureValidAccessToken()
@@ -194,6 +235,27 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     envelopeId, error));
     }
 
+    /**
+     * Updates an existing signature envelope in Adobe Sign.
+     *
+     * <p>This method updates envelope metadata and properties in Adobe Sign.
+     * The implementation:</p>
+     * <ul>
+     *   <li>Looks up the Adobe Sign agreement ID using the envelope ID mapping</li>
+     *   <li>Updates agreement properties via Adobe Sign API</li>
+     *   <li>Synchronizes envelope status and metadata</li>
+     *   <li>Returns the updated envelope with current information</li>
+     * </ul>
+     *
+     * <p>Note: Some envelope properties may not be modifiable after creation
+     * depending on the current status and Adobe Sign limitations.</p>
+     *
+     * @param envelope the envelope with updated information
+     * @return a Mono containing the updated envelope
+     * @throws IllegalArgumentException if envelope is null or envelope ID is missing
+     * @throws RuntimeException if the envelope mapping is not found or Adobe Sign API call fails
+     * @see SignatureEnvelope
+     */
     @Override
     public Mono<SignatureEnvelope> updateEnvelope(SignatureEnvelope envelope) {
         return ensureValidAccessToken()
@@ -229,6 +291,29 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     envelope.getId(), error));
     }
 
+    /**
+     * Sends a signature envelope to all participants for signing.
+     *
+     * <p>This method initiates the signing process by sending the envelope to all
+     * configured signers. The implementation:</p>
+     * <ul>
+     *   <li>Looks up the Adobe Sign agreement ID using the envelope ID mapping</li>
+     *   <li>Sends the agreement to participants via Adobe Sign API</li>
+     *   <li>Updates envelope status to SENT</li>
+     *   <li>Records the sent timestamp and sender information</li>
+     * </ul>
+     *
+     * <p>Once sent, participants will receive email notifications with signing instructions
+     * and links to access the documents for signing.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to send
+     * @param sentBy the UUID of the user sending the envelope
+     * @return a Mono containing the updated envelope with SENT status
+     * @throws IllegalArgumentException if envelopeId or sentBy is null
+     * @throws RuntimeException if the envelope mapping is not found or Adobe Sign API call fails
+     * @see SignatureEnvelope
+     * @see EnvelopeStatus#SENT
+     */
     @Override
     public Mono<SignatureEnvelope> sendEnvelope(UUID envelopeId, UUID sentBy) {
         return ensureValidAccessToken()
@@ -260,6 +345,26 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     envelopeId, error));
     }
 
+    /**
+     * Retrieves signature envelopes filtered by their current status.
+     *
+     * <p>This method queries Adobe Sign for agreements matching the specified status.
+     * The implementation:</p>
+     * <ul>
+     *   <li>Converts ECM envelope status to Adobe Sign agreement status</li>
+     *   <li>Queries Adobe Sign API with status filter and optional limit</li>
+     *   <li>Converts Adobe Sign agreements to ECM envelope format</li>
+     *   <li>Returns a stream of matching envelopes</li>
+     * </ul>
+     *
+     * @param status the envelope status to filter by (e.g., DRAFT, SENT, COMPLETED)
+     * @param limit optional maximum number of envelopes to return, null for no limit
+     * @return a Flux stream of envelopes matching the specified status
+     * @throws IllegalArgumentException if status is null
+     * @throws RuntimeException if Adobe Sign API call fails
+     * @see EnvelopeStatus
+     * @see SignatureEnvelope
+     */
     @Override
     public Flux<SignatureEnvelope> getEnvelopesByStatus(EnvelopeStatus status, Integer limit) {
         return ensureValidAccessToken()
@@ -294,6 +399,25 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     status, error));
     }
 
+    /**
+     * Retrieves signature envelopes created by a specific user.
+     *
+     * <p>This method queries Adobe Sign for agreements created by the specified user.
+     * The implementation:</p>
+     * <ul>
+     *   <li>Queries Adobe Sign API filtering by creator/author</li>
+     *   <li>Applies optional limit to the number of results</li>
+     *   <li>Converts Adobe Sign agreements to ECM envelope format</li>
+     *   <li>Returns a stream of envelopes created by the user</li>
+     * </ul>
+     *
+     * @param creatorId the UUID of the user who created the envelopes
+     * @param limit optional maximum number of envelopes to return, null for no limit
+     * @return a Flux stream of envelopes created by the specified user
+     * @throws IllegalArgumentException if creatorId is null
+     * @throws RuntimeException if Adobe Sign API call fails
+     * @see SignatureEnvelope
+     */
     @Override
     public Flux<SignatureEnvelope> getEnvelopesByCreator(UUID creatorId, Integer limit) {
         return ensureValidAccessToken()
@@ -327,6 +451,25 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     creatorId, error));
     }
 
+    /**
+     * Retrieves signature envelopes sent by a specific user.
+     *
+     * <p>This method queries Adobe Sign for agreements sent by the specified user.
+     * The implementation:</p>
+     * <ul>
+     *   <li>Queries Adobe Sign API filtering by sender</li>
+     *   <li>Applies optional limit to the number of results</li>
+     *   <li>Converts Adobe Sign agreements to ECM envelope format</li>
+     *   <li>Returns a stream of envelopes sent by the user</li>
+     * </ul>
+     *
+     * @param senderId the UUID of the user who sent the envelopes
+     * @param limit optional maximum number of envelopes to return, null for no limit
+     * @return a Flux stream of envelopes sent by the specified user
+     * @throws IllegalArgumentException if senderId is null
+     * @throws RuntimeException if Adobe Sign API call fails
+     * @see SignatureEnvelope
+     */
     @Override
     public Flux<SignatureEnvelope> getEnvelopesBySender(UUID senderId, Integer limit) {
         return ensureValidAccessToken()
@@ -360,6 +503,26 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     senderId, error));
     }
 
+    /**
+     * Retrieves signature envelopes filtered by signature provider.
+     *
+     * <p>This method queries Adobe Sign for agreements associated with a specific
+     * signature provider. The implementation:</p>
+     * <ul>
+     *   <li>Queries Adobe Sign API filtering by provider type</li>
+     *   <li>Applies optional limit to the number of results</li>
+     *   <li>Converts Adobe Sign agreements to ECM envelope format</li>
+     *   <li>Returns a stream of envelopes from the specified provider</li>
+     * </ul>
+     *
+     * @param provider the signature provider to filter by (e.g., ADOBE_SIGN, DOCUSIGN)
+     * @param limit optional maximum number of envelopes to return, null for no limit
+     * @return a Flux stream of envelopes from the specified provider
+     * @throws IllegalArgumentException if provider is null
+     * @throws RuntimeException if Adobe Sign API call fails
+     * @see SignatureProvider
+     * @see SignatureEnvelope
+     */
     @Override
     public Flux<SignatureEnvelope> getEnvelopesByProvider(SignatureProvider provider, Integer limit) {
         return ensureValidAccessToken()
@@ -393,6 +556,30 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     provider, error));
     }
 
+    /**
+     * Generates a signing URL for a specific signer in an envelope.
+     *
+     * <p>This method creates an embedded signing URL that allows a signer to access
+     * and sign documents directly within an application. The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the envelope and validates its existence</li>
+     *   <li>Looks up the Adobe Sign agreement ID</li>
+     *   <li>Generates a signing URL for the specified signer email</li>
+     *   <li>Includes optional return URL and language preferences</li>
+     * </ul>
+     *
+     * <p>The generated URL is typically used for embedded signing workflows where
+     * the signing experience is integrated into the host application.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope
+     * @param signerEmail the email address of the signer
+     * @param returnUrl optional URL to redirect to after signing completion
+     * @param language optional language preference for the signing interface
+     * @return a Mono containing the signing URL for the specified signer
+     * @throws IllegalArgumentException if envelopeId or signerEmail is null
+     * @throws RuntimeException if envelope is not found or Adobe Sign API call fails
+     * @see SignatureEnvelope
+     */
     @Override
     public Mono<String> getSigningUrl(UUID envelopeId, String signerEmail, String returnUrl, String language) {
         return getEnvelope(envelopeId)
@@ -434,6 +621,27 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
                     envelopeId, error));
     }
 
+    /**
+     * Resends notification emails to all pending signers in an envelope.
+     *
+     * <p>This method triggers Adobe Sign to resend notification emails to signers
+     * who have not yet completed their signing tasks. The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the envelope and validates its existence</li>
+     *   <li>Identifies pending signers who need to complete signing</li>
+     *   <li>Triggers Adobe Sign to resend notification emails</li>
+     *   <li>Updates envelope metadata with resend timestamp</li>
+     * </ul>
+     *
+     * <p>This is useful for reminding signers about pending signature requests
+     * or when initial notification emails may have been missed.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to resend
+     * @return a Mono that completes when the resend operation is finished
+     * @throws IllegalArgumentException if envelopeId is null
+     * @throws RuntimeException if envelope is not found or Adobe Sign API call fails
+     * @see SignatureEnvelope
+     */
     @Override
     public Mono<Void> resendEnvelope(UUID envelopeId) {
         return getEnvelope(envelopeId)
@@ -461,6 +669,29 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
             .doOnError(error -> log.error("Failed to resend envelope {} in Adobe Sign", envelopeId, error));
     }
 
+    /**
+     * Permanently deletes a signature envelope from Adobe Sign.
+     *
+     * <p>This method removes an envelope and its associated agreement from Adobe Sign.
+     * The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the envelope and validates its existence</li>
+     *   <li>Checks if the envelope can be safely deleted (typically only drafts)</li>
+     *   <li>Deletes the agreement from Adobe Sign</li>
+     *   <li>Removes the envelope ID mapping from local cache</li>
+     * </ul>
+     *
+     * <p><strong>Warning:</strong> This operation is irreversible. Once deleted,
+     * the envelope and all associated data cannot be recovered. Consider using
+     * {@link #voidEnvelope(UUID, String, UUID)} for sent envelopes instead.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to delete
+     * @return a Mono that completes when the deletion is finished
+     * @throws IllegalArgumentException if envelopeId is null
+     * @throws RuntimeException if envelope is not found, cannot be deleted, or Adobe Sign API call fails
+     * @see #voidEnvelope(UUID, String, UUID)
+     * @see SignatureEnvelope
+     */
     @Override
     public Mono<Void> deleteEnvelope(UUID envelopeId) {
         return getEnvelope(envelopeId)
@@ -488,6 +719,28 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
             .doOnError(error -> log.error("Failed to delete envelope {} in Adobe Sign", envelopeId, error));
     }
 
+    /**
+     * Archives a completed signature envelope for long-term storage.
+     *
+     * <p>This method moves a completed envelope to archived status, preserving
+     * all signature data and audit trails for compliance purposes. The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the envelope and validates it can be archived (must be completed)</li>
+     *   <li>Updates the envelope status to ARCHIVED in Adobe Sign</li>
+     *   <li>Preserves all signature data and audit information</li>
+     *   <li>Returns the updated envelope with archived status</li>
+     * </ul>
+     *
+     * <p>Archived envelopes remain accessible for compliance and audit purposes
+     * but are typically excluded from active workflow queries.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to archive
+     * @return a Mono containing the archived envelope with updated status
+     * @throws IllegalArgumentException if envelopeId is null
+     * @throws RuntimeException if envelope is not found, not completed, or Adobe Sign API call fails
+     * @see SignatureEnvelope
+     * @see EnvelopeStatus#ARCHIVED
+     */
     @Override
     public Mono<SignatureEnvelope> archiveEnvelope(UUID envelopeId) {
         return getEnvelope(envelopeId)
@@ -519,6 +772,31 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
             .doOnError(error -> log.error("Failed to archive envelope {} in Adobe Sign", envelopeId, error));
     }
 
+    /**
+     * Voids a signature envelope, canceling the signing process.
+     *
+     * <p>This method cancels an active envelope, preventing further signing and
+     * marking it as voided. The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the envelope and validates it can be voided (must be active)</li>
+     *   <li>Cancels the agreement in Adobe Sign with the provided reason</li>
+     *   <li>Updates envelope status to VOIDED</li>
+     *   <li>Records void timestamp, reason, and the user who voided it</li>
+     * </ul>
+     *
+     * <p>Voided envelopes preserve all existing signatures and audit data but
+     * prevent any additional signing activities. This is the preferred method
+     * for canceling sent envelopes rather than deletion.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to void
+     * @param voidReason the reason for voiding the envelope (required for audit purposes)
+     * @param voidedBy the UUID of the user voiding the envelope
+     * @return a Mono containing the voided envelope with updated status
+     * @throws IllegalArgumentException if any parameter is null or voidReason is empty
+     * @throws RuntimeException if envelope is not found, cannot be voided, or Adobe Sign API call fails
+     * @see SignatureEnvelope
+     * @see EnvelopeStatus#VOIDED
+     */
     @Override
     public Mono<SignatureEnvelope> voidEnvelope(UUID envelopeId, String voidReason, UUID voidedBy) {
         return ensureValidAccessToken()
@@ -780,6 +1058,26 @@ public class AdobeSignSignatureEnvelopeAdapter implements SignatureEnvelopePort 
         }
     }
 
+    /**
+     * Checks if a signature envelope exists in Adobe Sign.
+     *
+     * <p>This method verifies the existence of an envelope without retrieving
+     * its full data. The implementation:</p>
+     * <ul>
+     *   <li>Looks up the Adobe Sign agreement ID using the envelope ID mapping</li>
+     *   <li>Performs a lightweight existence check via Adobe Sign API</li>
+     *   <li>Returns true if the envelope exists, false otherwise</li>
+     * </ul>
+     *
+     * <p>This is useful for validation and conditional logic without the overhead
+     * of retrieving complete envelope data.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to check
+     * @return a Mono containing true if the envelope exists, false otherwise
+     * @throws IllegalArgumentException if envelopeId is null
+     * @throws RuntimeException if Adobe Sign API call fails
+     * @see SignatureEnvelope
+     */
     @Override
     public Mono<Boolean> existsEnvelope(UUID envelopeId) {
         return ensureValidAccessToken()

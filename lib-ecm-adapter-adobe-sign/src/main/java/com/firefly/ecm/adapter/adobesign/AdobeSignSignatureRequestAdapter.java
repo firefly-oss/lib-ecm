@@ -19,6 +19,7 @@ package com.firefly.ecm.adapter.adobesign;
 import com.firefly.core.ecm.adapter.AdapterFeature;
 import com.firefly.core.ecm.adapter.EcmAdapter;
 import com.firefly.core.ecm.domain.enums.esignature.SignatureRequestType;
+import com.firefly.core.ecm.domain.model.esignature.SignatureEnvelope;
 import com.firefly.core.ecm.domain.model.esignature.SignatureRequest;
 import com.firefly.core.ecm.domain.enums.esignature.SignatureRequestStatus;
 import com.firefly.core.ecm.port.esignature.SignatureRequestPort;
@@ -107,6 +108,28 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
         log.info("AdobeSignSignatureRequestAdapter initialized with base URL: {}", properties.getBaseUrl());
     }
 
+    /**
+     * Creates a new signature request in Adobe Sign.
+     *
+     * <p>This method creates an individual signature request within an existing
+     * agreement or as a standalone request. The implementation:</p>
+     * <ul>
+     *   <li>Generates a unique request ID if not provided</li>
+     *   <li>Creates or updates the participant in the Adobe Sign agreement</li>
+     *   <li>Maps the ECM request ID to the Adobe Sign participant ID</li>
+     *   <li>Returns the created request with updated metadata</li>
+     * </ul>
+     *
+     * <p>The signature request must contain valid signer information and be
+     * associated with an existing envelope/agreement.</p>
+     *
+     * @param signatureRequest the signature request to create, containing signer details and requirements
+     * @return a Mono containing the created signature request with assigned ID and Adobe Sign metadata
+     * @throws IllegalArgumentException if signatureRequest is null or contains invalid data
+     * @throws RuntimeException if Adobe Sign API call fails or associated envelope is not found
+     * @see SignatureRequest
+     * @see SignatureEnvelope
+     */
     @Override
     public Mono<SignatureRequest> createSignatureRequest(SignatureRequest signatureRequest) {
         return ensureValidAccessToken()
@@ -157,6 +180,24 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
                     signatureRequest.getId(), error));
     }
 
+    /**
+     * Retrieves a signature request by its unique identifier.
+     *
+     * <p>This method fetches signature request details from Adobe Sign using the
+     * mapped participant ID. The implementation:</p>
+     * <ul>
+     *   <li>Looks up the Adobe Sign participant ID using the request ID mapping</li>
+     *   <li>Retrieves participant details from Adobe Sign API</li>
+     *   <li>Converts Adobe Sign participant data to ECM signature request format</li>
+     *   <li>Returns the request with current status and metadata</li>
+     * </ul>
+     *
+     * @param requestId the unique UUID identifier of the signature request to retrieve
+     * @return a Mono containing the signature request if found, empty Mono if not found
+     * @throws IllegalArgumentException if requestId is null
+     * @throws RuntimeException if the request mapping is not found or Adobe Sign API call fails
+     * @see SignatureRequest
+     */
     @Override
     public Mono<SignatureRequest> getSignatureRequest(UUID requestId) {
         return ensureValidAccessToken()
@@ -184,6 +225,27 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
                     requestId, error));
     }
 
+    /**
+     * Retrieves signature requests that are expiring within a specified time range.
+     *
+     * <p>This method queries Adobe Sign for signature requests with expiration dates
+     * falling within the specified time window. The implementation:</p>
+     * <ul>
+     *   <li>Queries Adobe Sign API filtering by expiration date range</li>
+     *   <li>Converts Adobe Sign participant data to ECM signature request format</li>
+     *   <li>Returns a stream of requests expiring in the specified timeframe</li>
+     * </ul>
+     *
+     * <p>This is useful for proactive notification and reminder systems to alert
+     * signers about upcoming deadlines.</p>
+     *
+     * @param fromTime the start of the expiration time range (inclusive)
+     * @param toTime the end of the expiration time range (inclusive)
+     * @return a Flux stream of signature requests expiring within the specified range
+     * @throws IllegalArgumentException if fromTime or toTime is null, or fromTime is after toTime
+     * @throws RuntimeException if Adobe Sign API call fails
+     * @see SignatureRequest
+     */
     @Override
     public Flux<SignatureRequest> getExpiringRequests(Instant fromTime, Instant toTime) {
         return ensureValidAccessToken()
@@ -225,6 +287,29 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
             .doOnError(error -> log.error("Failed to retrieve expiring signature requests from Adobe Sign", error));
     }
 
+    /**
+     * Delegates a signature request to another person.
+     *
+     * <p>This method allows the current signer to delegate their signing responsibility
+     * to another person. The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the current signature request and validates delegation is allowed</li>
+     *   <li>Updates the Adobe Sign participant with new delegate information</li>
+     *   <li>Sends notification to the delegate about the new signing responsibility</li>
+     *   <li>Returns the updated request with delegate information</li>
+     * </ul>
+     *
+     * <p>Delegation is typically used when the original signer is unavailable or
+     * when signing authority needs to be transferred to another authorized person.</p>
+     *
+     * @param requestId the unique UUID identifier of the signature request to delegate
+     * @param delegateEmail the email address of the person receiving the delegation
+     * @param delegateName the full name of the person receiving the delegation
+     * @return a Mono containing the updated signature request with delegate information
+     * @throws IllegalArgumentException if any parameter is null or delegateEmail is invalid
+     * @throws RuntimeException if request is not found, delegation is not allowed, or Adobe Sign API call fails
+     * @see SignatureRequest
+     */
     @Override
     public Mono<SignatureRequest> delegateRequest(UUID requestId, String delegateEmail, String delegateName) {
         return ensureValidAccessToken()
@@ -263,6 +348,26 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
                     requestId, error));
     }
 
+    /**
+     * Resends notification email to a signer for a pending signature request.
+     *
+     * <p>This method triggers Adobe Sign to resend the notification email to the
+     * signer for a specific signature request. The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the signature request and validates it's in a pending state</li>
+     *   <li>Triggers Adobe Sign to resend notification to the specific participant</li>
+     *   <li>Updates request metadata with resend timestamp</li>
+     * </ul>
+     *
+     * <p>This is useful for reminding individual signers about their pending
+     * signature tasks without affecting other participants in the envelope.</p>
+     *
+     * @param requestId the unique UUID identifier of the signature request
+     * @return a Mono that completes when the notification resend is finished
+     * @throws IllegalArgumentException if requestId is null
+     * @throws RuntimeException if request is not found, not in pending state, or Adobe Sign API call fails
+     * @see SignatureRequest
+     */
     @Override
     public Mono<Void> resendNotification(UUID requestId) {
         return ensureValidAccessToken()
@@ -284,6 +389,29 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
                     requestId, error));
     }
 
+    /**
+     * Marks a signature request as completed.
+     *
+     * <p>This method updates the signature request status to completed and records
+     * the completion timestamp. The implementation:</p>
+     * <ul>
+     *   <li>Retrieves the current signature request</li>
+     *   <li>Updates the request status to COMPLETED</li>
+     *   <li>Records the completion timestamp</li>
+     *   <li>Synchronizes the status with Adobe Sign if needed</li>
+     * </ul>
+     *
+     * <p>This method is typically called when signature validation confirms
+     * that all required signatures have been successfully applied.</p>
+     *
+     * @param requestId the unique UUID identifier of the signature request
+     * @param completedAt the timestamp when the request was completed
+     * @return a Mono containing the updated signature request with completed status
+     * @throws IllegalArgumentException if requestId or completedAt is null
+     * @throws RuntimeException if request is not found or update fails
+     * @see SignatureRequest
+     * @see SignatureRequestStatus#COMPLETED
+     */
     @Override
     public Mono<SignatureRequest> markAsCompleted(UUID requestId, Instant completedAt) {
         return getSignatureRequest(requestId)

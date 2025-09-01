@@ -155,13 +155,13 @@ public class AdobeSignAutoConfiguration {
     /**
      * Creates the Adobe Sign Signature Envelope Adapter.
      *
-     * @param webClient the Adobe Sign web client
+     * @param adobeSignWebClient the Adobe Sign web client
      * @param properties the Adobe Sign adapter properties
      * @param objectMapper the object mapper
      * @param documentContentPort the document content port
      * @param documentPort the document port
-     * @param circuitBreaker the circuit breaker
-     * @param retry the retry mechanism
+     * @param adobeSignCircuitBreaker the circuit breaker
+     * @param adobeSignRetry the retry mechanism
      * @return configured AdobeSignSignatureEnvelopeAdapter
      */
     @Bean
@@ -189,11 +189,11 @@ public class AdobeSignAutoConfiguration {
     /**
      * Creates the Adobe Sign Signature Request Adapter.
      *
-     * @param webClient the Adobe Sign web client
+     * @param adobeSignWebClient the Adobe Sign web client
      * @param properties the Adobe Sign adapter properties
      * @param objectMapper the object mapper
-     * @param circuitBreaker the circuit breaker
-     * @param retry the retry mechanism
+     * @param adobeSignCircuitBreaker the circuit breaker
+     * @param adobeSignRetry the retry mechanism
      * @return configured AdobeSignSignatureRequestAdapter
      */
     @Bean
@@ -217,11 +217,11 @@ public class AdobeSignAutoConfiguration {
     /**
      * Creates the Adobe Sign Signature Validation Adapter.
      *
-     * @param webClient the Adobe Sign web client
+     * @param adobeSignWebClient the Adobe Sign web client
      * @param properties the Adobe Sign adapter properties
      * @param objectMapper the object mapper
-     * @param circuitBreaker the circuit breaker
-     * @param retry the retry mechanism
+     * @param adobeSignCircuitBreaker the circuit breaker
+     * @param adobeSignRetry the retry mechanism
      * @return configured AdobeSignSignatureValidationAdapter
      */
     @Bean
