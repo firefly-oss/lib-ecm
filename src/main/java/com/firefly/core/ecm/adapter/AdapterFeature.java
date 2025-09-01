@@ -144,5 +144,70 @@ public enum AdapterFeature {
     /**
      * Retention policies
      */
-    RETENTION_POLICIES
+    RETENTION_POLICIES,
+
+    /**
+     * Text extraction and OCR capabilities
+     */
+    TEXT_EXTRACTION,
+
+    /**
+     * Optical Character Recognition (OCR)
+     */
+    OCR,
+
+    /**
+     * Document classification and categorization
+     */
+    DOCUMENT_CLASSIFICATION,
+
+    /**
+     * Document validation and verification
+     */
+    DOCUMENT_VALIDATION,
+
+    /**
+     * Structured data extraction (forms, tables, key-value pairs)
+     */
+    STRUCTURED_DATA_EXTRACTION,
+
+    /**
+     * Form processing and field extraction
+     */
+    FORM_PROCESSING,
+
+    /**
+     * Table data extraction
+     */
+    TABLE_EXTRACTION,
+
+    /**
+     * Handwriting recognition
+     */
+    HANDWRITING_RECOGNITION,
+
+    /**
+     * Layout analysis and document structure detection
+     */
+    LAYOUT_ANALYSIS,
+
+    /**
+     * Named entity recognition and extraction
+     */
+    ENTITY_EXTRACTION,
+
+    /**
+     * Document quality assessment and confidence scoring
+     */
+    QUALITY_ASSESSMENT,
+
+    /**
+     * Custom template-based extraction
+     */
+    TEMPLATE_EXTRACTION,
+
+    /**
+     * Intelligent Document Processing (IDP) capabilities
+     */
+    INTELLIGENT_DOCUMENT_PROCESSING
 }

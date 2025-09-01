@@ -15,6 +15,9 @@
  */
 package com.firefly.core.ecm.config;
 
+import com.firefly.core.ecm.adapter.AdapterFeature;
+import com.firefly.core.ecm.adapter.AdapterRegistry;
+import com.firefly.core.ecm.adapter.AdapterSelector;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -274,6 +277,9 @@ public class EcmProperties {
 
         /** Enables content extraction and indexing. @defaultValue false */
         private Boolean contentExtraction = false;
+
+        /** Enables Intelligent Document Processing (IDP) capabilities. @defaultValue false */
+        private Boolean idp = false;
     }
     
     /**
