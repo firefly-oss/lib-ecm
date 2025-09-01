@@ -14,6 +14,7 @@ The Firefly ECM Library solves the challenge of **vendor lock-in** and **integra
 
 - **Switch between storage providers** (S3, Azure, MinIO, Alfresco) without changing business logic
 - **Integrate multiple eSignature providers** (DocuSign, Adobe Sign) through a unified API
+- **Process documents intelligently** with IDP providers (AWS Textract, Azure Form Recognizer, Google Document AI)
 - **Scale horizontally** with cloud-native, reactive architecture
 - **Maintain compliance** with built-in audit trails and security features
 - **Future-proof applications** with a stable, vendor-agnostic interface
@@ -36,7 +37,8 @@ com.firefly.core.ecm/
 │   │   ├── folder/              # Folder, FolderPermissions
 │   │   ├── security/            # Permission
 │   │   ├── audit/               # AuditEvent
-│   │   └── esignature/          # SignatureEnvelope, SignatureRequest
+│   │   ├── esignature/          # SignatureEnvelope, SignatureRequest
+│   │   └── idp/                 # DocumentProcessingRequest, ExtractedData
 │   ├── enums/                   # Domain Enumerations
 │   └── dto/                     # Data Transfer Objects
 ├── port/                        # Business Interfaces (Ports)
@@ -44,7 +46,8 @@ com.firefly.core.ecm/
 │   ├── folder/                  # Folder management ports
 │   ├── security/                # Security and permissions ports
 │   ├── audit/                   # Audit and compliance ports
-│   └── esignature/              # Digital signature ports
+│   ├── esignature/              # Digital signature ports
+│   └── idp/                     # Intelligent Document Processing ports
 ├── adapter/                     # Adapter Infrastructure
 ├── config/                      # Spring Boot Configuration
 └── service/                     # Application Services
@@ -122,6 +125,15 @@ public class DocumentService {
 - **Validation & Proof**: Signature verification and audit trails
 - **Compliance**: eIDAS, ESIGN Act, and other regulatory standards
 
+### Intelligent Document Processing (IDP)
+- **Text Extraction**: OCR and handwriting recognition framework ready for multiple providers
+- **Document Classification**: Automatic document type detection and categorization interfaces
+- **Data Extraction**: Forms, tables, key-value pairs, and structured data extraction ports
+- **Document Validation**: Business rules, compliance checks, and quality assessment framework
+- **Multi-provider Ready**: Framework prepared for AWS Textract, Azure Form Recognizer, Google Document AI*
+
+*Note: IDP port interfaces and framework are complete. Concrete adapter implementations coming soon.
+
 ### Audit & Compliance
 - **Complete Audit Trail**: Track all document and signature activities
 - **Compliance Reporting**: Generate regulatory compliance reports
@@ -137,11 +149,15 @@ Detailed integration guides are available in the [docs/guides](docs/guides) dire
 - **[Alfresco Integration](docs/guides/alfresco-integration.md)** - Enterprise ECM with Alfresco
 - **[Azure Blob Storage](docs/guides/azure-integration.md)** - Microsoft Azure cloud storage
 - **[MinIO Integration](docs/guides/minio-integration.md)** - Self-hosted S3-compatible storage
+- **[AWS Textract Integration](docs/idp/aws-textract-integration.md)** - AWS Textract for document processing
+- **[Azure Form Recognizer Integration](docs/idp/azure-form-recognizer-integration.md)** - Azure cognitive services
+- **[Google Document AI Integration](docs/idp/google-document-ai-integration.md)** - Google Cloud document processing
 
 ## 📚 Documentation
 
 - **[API Reference](docs/api/)** - Complete API documentation
 - **[Configuration Guide](docs/configuration.md)** - All configuration options
+- **[IDP Guide](docs/idp/)** - Intelligent Document Processing documentation
 - **[Examples](docs/examples/)** - Working code examples
 - **[Architecture Guide](docs/architecture.md)** - Detailed architecture documentation
 - **[Testing Guide](docs/testing.md)** - Testing strategies and examples
