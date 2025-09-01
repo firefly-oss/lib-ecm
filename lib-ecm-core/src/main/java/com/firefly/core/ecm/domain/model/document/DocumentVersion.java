@@ -90,9 +90,9 @@ public class DocumentVersion {
     private final String extension;
     
     /**
-     * User who created this version (Long)
+     * User who created this version (UUID)
      */
-    private final Long createdBy;
+    private final UUID createdBy;
     
     /**
      * Version creation timestamp

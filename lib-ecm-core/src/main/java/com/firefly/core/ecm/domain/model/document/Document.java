@@ -183,19 +183,19 @@ public class Document {
     /**
      * User ID of the person who originally created the document.
      *
-     * <p>Long identifier of the user who first uploaded or created this document
+     * <p>UUID identifier of the user who first uploaded or created this document
      * in the ECM system. This value is immutable and provides audit trail
      * information for compliance and tracking purposes.</p>
      */
-    private final Long createdBy;
+    private final UUID createdBy;
 
     /**
      * User ID of the person who last modified the document.
      *
-     * <p>Long identifier of the user who most recently updated the document
+     * <p>UUID identifier of the user who most recently updated the document
      * content or metadata. Updated automatically when document changes are made.</p>
      */
-    private final Long modifiedBy;
+    private final UUID modifiedBy;
 
     /**
      * Timestamp when the document was originally created.

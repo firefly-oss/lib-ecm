@@ -25,16 +25,74 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Port interface for signature envelope management operations.
- * Handles envelope creation, sending, tracking, and lifecycle management.
+ * Port interface for signature envelope management operations in the Firefly ECM system.
+ *
+ * <p>This interface defines the contract for managing signature envelopes throughout their
+ * complete lifecycle, from creation to completion and archival. It follows the hexagonal
+ * architecture pattern where this port defines the business requirements, and adapters
+ * provide concrete implementations for different eSignature providers.</p>
+ *
+ * <p>Key capabilities provided by this port:</p>
+ * <ul>
+ *   <li><strong>Envelope Lifecycle Management:</strong> Create, send, track, and archive envelopes</li>
+ *   <li><strong>Multi-Provider Support:</strong> Abstract interface supporting various eSignature providers</li>
+ *   <li><strong>Status Tracking:</strong> Monitor envelope progress and completion status</li>
+ *   <li><strong>Query Operations:</strong> Find envelopes by various criteria (status, creator, provider)</li>
+ *   <li><strong>Embedded Signing:</strong> Generate signing URLs for integrated workflows</li>
+ *   <li><strong>Compliance Features:</strong> Archive completed envelopes for audit and compliance</li>
+ * </ul>
+ *
+ * <p>All operations return reactive types (Mono/Flux) for non-blocking processing and
+ * integration with reactive application architectures. The interface uses UUIDs for
+ * entity identifiers following Firefly's architectural standards.</p>
+ *
+ * <p>Typical usage patterns:</p>
+ * <pre>
+ * {@code
+ * // Create and send an envelope
+ * SignatureEnvelope envelope = SignatureEnvelope.builder()
+ *     .title("Contract Signature")
+ *     .documentIds(List.of(documentId))
+ *     .signatureRequests(signatureRequests)
+ *     .build();
+ *
+ * Mono<SignatureEnvelope> result = envelopePort.createEnvelope(envelope)
+ *     .flatMap(created -> envelopePort.sendEnvelope(created.getId(), senderId));
+ * }
+ * </pre>
+ *
+ * @author Firefly Software Solutions Inc.
+ * @since 1.0.0
+ * @see SignatureEnvelope
+ * @see SignatureRequest
+ * @see EnvelopeStatus
+ * @see SignatureProvider
  */
 public interface SignatureEnvelopePort {
     
     /**
-     * Create a new signature envelope.
+     * Creates a new signature envelope with documents and signature requests.
      *
-     * @param envelope the envelope metadata
-     * @return Mono containing the created envelope with assigned ID
+     * <p>This method creates a new envelope containing one or more documents that require
+     * signatures from specified participants. The implementation should:</p>
+     * <ul>
+     *   <li>Generate a unique envelope ID if not provided</li>
+     *   <li>Validate that all referenced documents exist and are accessible</li>
+     *   <li>Create the envelope in the eSignature provider's system</li>
+     *   <li>Set up signature requests for all specified participants</li>
+     *   <li>Return the created envelope with provider-specific metadata</li>
+     * </ul>
+     *
+     * <p>The envelope will be in DRAFT status after creation and must be explicitly
+     * sent using {@link #sendEnvelope(UUID, UUID)} to initiate the signing process.</p>
+     *
+     * @param envelope the envelope metadata containing documents, signature requests, and settings
+     * @return a Mono containing the created envelope with assigned ID and provider metadata
+     * @throws IllegalArgumentException if envelope is null or contains invalid data
+     * @throws RuntimeException if envelope creation fails or referenced documents are not found
+     * @see #sendEnvelope(UUID, UUID)
+     * @see SignatureEnvelope
+     * @see EnvelopeStatus#DRAFT
      */
     Mono<SignatureEnvelope> createEnvelope(SignatureEnvelope envelope);
     
@@ -55,11 +113,29 @@ public interface SignatureEnvelopePort {
     Mono<SignatureEnvelope> updateEnvelope(SignatureEnvelope envelope);
     
     /**
-     * Send envelope to signers.
+     * Sends a signature envelope to all participants for signing.
      *
-     * @param envelopeId the envelope ID
-     * @param sentBy the user sending the envelope (UUID)
-     * @return Mono containing the sent envelope
+     * <p>This method initiates the signing process by sending the envelope to all
+     * configured signers. The implementation should:</p>
+     * <ul>
+     *   <li>Validate that the envelope exists and is in a sendable state (typically DRAFT)</li>
+     *   <li>Send notification emails to all participants with signing instructions</li>
+     *   <li>Update the envelope status to SENT</li>
+     *   <li>Record the sent timestamp and sender information</li>
+     *   <li>Generate signing URLs for participants if using embedded signing</li>
+     * </ul>
+     *
+     * <p>Once sent, participants will receive email notifications with links to access
+     * and sign the documents. The envelope status will be updated to reflect the
+     * current signing progress.</p>
+     *
+     * @param envelopeId the unique UUID identifier of the envelope to send
+     * @param sentBy the UUID of the user sending the envelope (for audit purposes)
+     * @return a Mono containing the sent envelope with updated status and metadata
+     * @throws IllegalArgumentException if envelopeId or sentBy is null
+     * @throws RuntimeException if envelope is not found, not in sendable state, or sending fails
+     * @see EnvelopeStatus#SENT
+     * @see SignatureEnvelope
      */
     Mono<SignatureEnvelope> sendEnvelope(UUID envelopeId, UUID sentBy);
 
