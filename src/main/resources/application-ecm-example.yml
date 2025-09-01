@@ -1,0 +1,115 @@
+# Example configuration for Firefly ECM Library
+# Copy this to your application.yml and customize as needed
+
+firefly:
+  ecm:
+    # Enable ECM functionality
+    enabled: true
+    
+    # Adapter type selection
+    # Options: s3, azure-blob, minio, alfresco, filesystem
+    adapter-type: "s3"
+    
+    # Adapter-specific properties
+    properties:
+      # S3 Configuration
+      bucket-name: "my-ecm-documents"
+      region: "us-east-1"
+      access-key: "${AWS_ACCESS_KEY}"
+      secret-key: "${AWS_SECRET_KEY}"
+      endpoint: "${AWS_ENDPOINT:}"  # Optional for S3-compatible services
+      
+      # Azure Blob Storage Configuration (when adapter-type: azure-blob)
+      # account-name: "${AZURE_STORAGE_ACCOUNT}"
+      # account-key: "${AZURE_STORAGE_KEY}"
+      # container-name: "ecm-documents"
+      
+      # MinIO Configuration (when adapter-type: minio)
+      # endpoint: "http://localhost:9000"
+      # access-key: "${MINIO_ACCESS_KEY}"
+      # secret-key: "${MINIO_SECRET_KEY}"
+      # bucket-name: "ecm-documents"
+      
+      # Alfresco Configuration (when adapter-type: alfresco)
+      # base-url: "http://localhost:8080/alfresco"
+      # username: "${ALFRESCO_USERNAME}"
+      # password: "${ALFRESCO_PASSWORD}"
+      # site-id: "ecm-site"
+    
+    # Connection settings
+    connection:
+      connect-timeout: "PT30S"
+      read-timeout: "PT5M"
+      max-connections: 100
+      retry-attempts: 3
+    
+    # Feature flags
+    features:
+      document-management: true
+      content-storage: true
+      versioning: true
+      folder-management: true
+      folder-hierarchy: true
+      permissions: true
+      security: true
+      search: true
+      auditing: true
+      esignature: false  # Enable for eSignature features
+      virus-scanning: false
+      content-extraction: false
+    
+    # Default settings
+    defaults:
+      max-file-size-mb: 100
+      allowed-extensions:
+        - "pdf"
+        - "doc"
+        - "docx"
+        - "txt"
+        - "jpg"
+        - "png"
+        - "xlsx"
+        - "pptx"
+      blocked-extensions:
+        - "exe"
+        - "bat"
+        - "cmd"
+        - "scr"
+        - "vbs"
+      checksum-algorithm: "SHA-256"
+      default-folder: "/"
+    
+    # Performance settings
+    performance:
+      batch-size: 100
+      cache-enabled: true
+      cache-expiration: "PT30M"
+      compression-enabled: true
+
+# Logging configuration for ECM
+logging:
+  level:
+    com.firefly.core.ecm: INFO
+    com.firefly.core.ecm.adapter: DEBUG  # Enable for adapter debugging
+    com.firefly.core.ecm.service: INFO
+
+# Spring configuration
+spring:
+  application:
+    name: "firefly-ecm-application"
+  
+  # WebFlux configuration for reactive support
+  webflux:
+    multipart:
+      max-in-memory-size: 10MB
+      max-disk-usage-per-part: 100MB
+
+# Management endpoints for monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,ecm"
+  endpoint:
+    health:
+      show-details: always

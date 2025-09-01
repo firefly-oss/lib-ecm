@@ -1,0 +1,241 @@
+{
+  "groups": [
+    {
+      "name": "firefly.ecm",
+      "type": "com.firefly.core.ecm.config.EcmProperties",
+      "description": "Configuration properties for Firefly ECM system."
+    },
+    {
+      "name": "firefly.ecm.connection",
+      "type": "com.firefly.core.ecm.config.EcmProperties$Connection",
+      "description": "Connection settings for ECM adapters."
+    },
+    {
+      "name": "firefly.ecm.features",
+      "type": "com.firefly.core.ecm.config.EcmProperties$Features",
+      "description": "Feature flags for ECM functionality."
+    },
+    {
+      "name": "firefly.ecm.defaults",
+      "type": "com.firefly.core.ecm.config.EcmProperties$Defaults",
+      "description": "Default settings for ECM system."
+    },
+    {
+      "name": "firefly.ecm.performance",
+      "type": "com.firefly.core.ecm.config.EcmProperties$Performance",
+      "description": "Performance settings for ECM system."
+    }
+  ],
+  "properties": [
+    {
+      "name": "firefly.ecm.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether ECM is enabled.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.adapter-type",
+      "type": "java.lang.String",
+      "description": "Adapter type to use (e.g., 's3', 'azure-blob', 'minio', 'alfresco')."
+    },
+    {
+      "name": "firefly.ecm.properties",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>",
+      "description": "Adapter-specific configuration properties."
+    },
+    {
+      "name": "firefly.ecm.connection.connect-timeout",
+      "type": "java.time.Duration",
+      "description": "Connection timeout for adapter connections.",
+      "defaultValue": "PT30S"
+    },
+    {
+      "name": "firefly.ecm.connection.read-timeout",
+      "type": "java.time.Duration",
+      "description": "Read timeout for adapter operations.",
+      "defaultValue": "PT5M"
+    },
+    {
+      "name": "firefly.ecm.connection.max-connections",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of concurrent connections.",
+      "defaultValue": 100
+    },
+    {
+      "name": "firefly.ecm.connection.retry-attempts",
+      "type": "java.lang.Integer",
+      "description": "Number of retry attempts for failed operations.",
+      "defaultValue": 3
+    },
+    {
+      "name": "firefly.ecm.features.document-management",
+      "type": "java.lang.Boolean",
+      "description": "Enable document management features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.content-storage",
+      "type": "java.lang.Boolean",
+      "description": "Enable content storage features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.versioning",
+      "type": "java.lang.Boolean",
+      "description": "Enable document versioning features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.folder-management",
+      "type": "java.lang.Boolean",
+      "description": "Enable folder management features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.folder-hierarchy",
+      "type": "java.lang.Boolean",
+      "description": "Enable folder hierarchy features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.permissions",
+      "type": "java.lang.Boolean",
+      "description": "Enable permission management features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.security",
+      "type": "java.lang.Boolean",
+      "description": "Enable security features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.search",
+      "type": "java.lang.Boolean",
+      "description": "Enable search features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.auditing",
+      "type": "java.lang.Boolean",
+      "description": "Enable audit trail features.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.features.esignature",
+      "type": "java.lang.Boolean",
+      "description": "Enable eSignature features.",
+      "defaultValue": false
+    },
+    {
+      "name": "firefly.ecm.features.virus-scanning",
+      "type": "java.lang.Boolean",
+      "description": "Enable virus scanning features.",
+      "defaultValue": false
+    },
+    {
+      "name": "firefly.ecm.features.content-extraction",
+      "type": "java.lang.Boolean",
+      "description": "Enable content extraction features.",
+      "defaultValue": false
+    },
+    {
+      "name": "firefly.ecm.defaults.max-file-size-mb",
+      "type": "java.lang.Long",
+      "description": "Maximum file size in megabytes.",
+      "defaultValue": 100
+    },
+    {
+      "name": "firefly.ecm.defaults.allowed-extensions",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of allowed file extensions.",
+      "defaultValue": ["pdf", "doc", "docx", "txt", "jpg", "png"]
+    },
+    {
+      "name": "firefly.ecm.defaults.blocked-extensions",
+      "type": "java.util.List<java.lang.String>",
+      "description": "List of blocked file extensions.",
+      "defaultValue": ["exe", "bat", "cmd", "scr"]
+    },
+    {
+      "name": "firefly.ecm.defaults.checksum-algorithm",
+      "type": "java.lang.String",
+      "description": "Default checksum algorithm.",
+      "defaultValue": "SHA-256"
+    },
+    {
+      "name": "firefly.ecm.defaults.default-folder",
+      "type": "java.lang.String",
+      "description": "Default folder path.",
+      "defaultValue": "/"
+    },
+    {
+      "name": "firefly.ecm.performance.batch-size",
+      "type": "java.lang.Integer",
+      "description": "Batch size for bulk operations.",
+      "defaultValue": 100
+    },
+    {
+      "name": "firefly.ecm.performance.cache-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable caching.",
+      "defaultValue": true
+    },
+    {
+      "name": "firefly.ecm.performance.cache-expiration",
+      "type": "java.time.Duration",
+      "description": "Cache expiration time.",
+      "defaultValue": "PT30M"
+    },
+    {
+      "name": "firefly.ecm.performance.compression-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable compression.",
+      "defaultValue": true
+    }
+  ],
+  "hints": [
+    {
+      "name": "firefly.ecm.adapter-type",
+      "values": [
+        {
+          "value": "s3",
+          "description": "Amazon S3 adapter"
+        },
+        {
+          "value": "azure-blob",
+          "description": "Azure Blob Storage adapter"
+        },
+        {
+          "value": "minio",
+          "description": "MinIO adapter"
+        },
+        {
+          "value": "alfresco",
+          "description": "Alfresco ECM adapter"
+        },
+        {
+          "value": "filesystem",
+          "description": "Local filesystem adapter"
+        }
+      ]
+    },
+    {
+      "name": "firefly.ecm.defaults.checksum-algorithm",
+      "values": [
+        {
+          "value": "SHA-256",
+          "description": "SHA-256 algorithm"
+        },
+        {
+          "value": "SHA-1",
+          "description": "SHA-1 algorithm"
+        },
+        {
+          "value": "MD5",
+          "description": "MD5 algorithm"
+        }
+      ]
+    }
+  ]
+}
