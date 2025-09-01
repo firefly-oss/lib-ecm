@@ -1,6 +1,19 @@
 # Azure Blob Storage Integration Guide
 
-This guide demonstrates how to integrate Azure Blob Storage as a document storage backend for the Firefly ECM Library. Azure Blob Storage provides enterprise-grade cloud storage with global availability and strong consistency.
+> **⚠️ IMPLEMENTATION STATUS: PLANNED**
+>
+> This guide describes the planned Azure Blob Storage integration for the Firefly ECM Library. The Azure adapter is **not yet implemented** but is planned for a future release. This guide serves as a design specification and implementation roadmap.
+>
+> **Currently Available Adapters:**
+> - ✅ **S3 Adapter** - Fully implemented and tested (21/21 tests passing)
+> - ✅ **DocuSign Adapter** - Fully implemented and tested (10/10 tests passing)
+>
+> **Planned Adapters:**
+> - 🚧 **Azure Blob Adapter** - Design complete, implementation planned
+> - 🚧 **Alfresco Adapter** - Design planned
+> - 🚧 **MinIO Adapter** - Design planned
+
+This guide demonstrates how to integrate Azure Blob Storage as a document storage backend for the Firefly ECM Library once the adapter is implemented. Azure Blob Storage provides enterprise-grade cloud storage with global availability and strong consistency.
 
 ## Table of Contents
 

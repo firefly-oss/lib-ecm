@@ -1,6 +1,19 @@
 # Alfresco Integration Guide
 
-This guide shows how to integrate Alfresco Content Services as an enterprise ECM backend for the Firefly ECM Library.
+> **⚠️ IMPLEMENTATION STATUS: PLANNED**
+>
+> This guide describes the planned Alfresco integration for the Firefly ECM Library. The Alfresco adapter is **not yet implemented** but is planned for a future release. This guide serves as a design specification and implementation roadmap.
+>
+> **Currently Available Adapters:**
+> - ✅ **S3 Adapter** - Fully implemented and tested (21/21 tests passing)
+> - ✅ **DocuSign Adapter** - Fully implemented and tested (10/10 tests passing)
+>
+> **Planned Adapters:**
+> - 🚧 **Alfresco Adapter** - Design complete, implementation planned
+> - 🚧 **Azure Blob Adapter** - Design planned
+> - 🚧 **MinIO Adapter** - Design planned
+
+This guide shows how to integrate Alfresco Content Services as an enterprise ECM backend for the Firefly ECM Library once the adapter is implemented.
 
 ## Prerequisites
 

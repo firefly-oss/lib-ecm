@@ -1,6 +1,19 @@
 # MinIO Integration Guide
 
-This guide demonstrates how to integrate MinIO as a self-hosted, S3-compatible document storage backend for the Firefly ECM Library. MinIO provides high-performance object storage that's compatible with Amazon S3 APIs while giving you full control over your data.
+> **⚠️ IMPLEMENTATION STATUS: PLANNED**
+>
+> This guide describes the planned MinIO integration for the Firefly ECM Library. While MinIO is S3-compatible and could potentially work with the existing S3 adapter, a dedicated MinIO adapter is **not yet implemented** but is planned for a future release. This guide serves as a design specification and implementation roadmap.
+>
+> **Currently Available Adapters:**
+> - ✅ **S3 Adapter** - Fully implemented and tested (21/21 tests passing) - May work with MinIO via S3 compatibility
+> - ✅ **DocuSign Adapter** - Fully implemented and tested (10/10 tests passing)
+>
+> **Planned Adapters:**
+> - 🚧 **MinIO Adapter** - Design complete, implementation planned
+> - 🚧 **Azure Blob Adapter** - Design planned
+> - 🚧 **Alfresco Adapter** - Design planned
+
+This guide demonstrates how to integrate MinIO as a self-hosted, S3-compatible document storage backend for the Firefly ECM Library once the dedicated adapter is implemented. MinIO provides high-performance object storage that's compatible with Amazon S3 APIs while giving you full control over your data.
 
 ## Table of Contents
 

@@ -105,13 +105,13 @@ Located in `com.firefly.core.ecm.port`, these define the business interfaces:
 Located in `com.firefly.core.ecm.adapter`, these implement the ports for specific technologies:
 
 #### Storage Adapters
-- **S3Adapter**: Amazon S3 implementation
-- **AlfrescoAdapter**: Alfresco Content Services
+- **S3Adapter**: Amazon S3 implementation ✅ **Available**
+- **AlfrescoAdapter**: Alfresco Content Services (planned)
 - **AzureBlobAdapter**: Azure Blob Storage (planned)
 - **MinIOAdapter**: MinIO Object Storage (planned)
 
 #### eSignature Adapters
-- **DocuSignAdapter**: DocuSign integration
+- **DocuSignAdapter**: DocuSign integration ✅ **Available**
 - **AdobeSignAdapter**: Adobe Sign integration (planned)
 
 ## Adapter System
