@@ -504,58 +504,53 @@ firefly:
       auditing: true                    # Audit logging
       esignature: true                  # Enable eSignature features
 
-    # eSignature configuration
-    esignature:
-      # Specify DocuSign as the eSignature provider
-      provider: "docusign"
+    # Adapter-specific properties (includes DocuSign configuration when esignature is enabled)
+    properties:
+      # DocuSign Authentication credentials (from environment variables for security)
+      docusign-integration-key: "${DOCUSIGN_INTEGRATION_KEY}"
+      docusign-user-id: "${DOCUSIGN_USER_ID}"
+      docusign-account-id: "${DOCUSIGN_ACCOUNT_ID}"
 
-      # DocuSign-specific configuration
-      properties:
-        # Authentication credentials (from environment variables for security)
-        integration-key: "${DOCUSIGN_INTEGRATION_KEY}"
-        user-id: "${DOCUSIGN_USER_ID}"
-        account-id: "${DOCUSIGN_ACCOUNT_ID}"
+      # DocuSign API endpoints
+      # Demo environment (for development and testing)
+      docusign-base-url: "https://demo.docusign.net/restapi"
+      docusign-oauth-base-url: "https://account-d.docusign.com"
 
-        # DocuSign API endpoints
-        # Demo environment (for development and testing)
-        base-url: "https://demo.docusign.net/restapi"
-        oauth-base-url: "https://account-d.docusign.com"
+      # Production environment (uncomment for production)
+      # docusign-base-url: "https://na1.docusign.net/restapi"  # Varies by region
+      # docusign-oauth-base-url: "https://account.docusign.com"
 
-        # Production environment (uncomment for production)
-        # base-url: "https://na1.docusign.net/restapi"  # Varies by region
-        # oauth-base-url: "https://account.docusign.com"
+      # Private key for JWT authentication
+      docusign-private-key-path: "classpath:docusign-private.key"
 
-        # Private key for JWT authentication
-        private-key-path: "classpath:docusign-private.key"
+      # JWT token settings
+      docusign-token-expiration-hours: 1         # Tokens expire after 1 hour
+      docusign-token-refresh-threshold-minutes: 10  # Refresh token 10 minutes before expiry
 
-        # JWT token settings
-        token-expiration-hours: 1         # Tokens expire after 1 hour
-        token-refresh-threshold-minutes: 10  # Refresh token 10 minutes before expiry
+      # Default envelope settings
+      docusign-default-envelope-subject: "Please sign this document"
+      docusign-default-envelope-message: "Please review and sign the attached document."
+      docusign-default-envelope-expiration-days: 30  # Envelopes expire after 30 days
 
-        # Default envelope settings
-        default-envelope-subject: "Please sign this document"
-        default-envelope-message: "Please review and sign the attached document."
-        default-envelope-expiration-days: 30  # Envelopes expire after 30 days
+      # Webhook settings for receiving status updates
+      docusign-webhook-url: "https://yourdomain.com/api/webhooks/docusign"
+      docusign-webhook-enabled: false            # Disable for local development
+      docusign-webhook-secret: "${DOCUSIGN_WEBHOOK_SECRET:}"  # For webhook verification
 
-        # Webhook settings for receiving status updates
-        webhook-url: "https://yourdomain.com/api/webhooks/docusign"
-        webhook-enabled: false            # Disable for local development
-        webhook-secret: "${DOCUSIGN_WEBHOOK_SECRET:}"  # For webhook verification
+      # API timeout and retry settings
+      docusign-api-timeout-seconds: 30           # API call timeout
+      docusign-connection-timeout-seconds: 10    # Connection timeout
+      docusign-max-retry-attempts: 3             # Number of retry attempts
+      docusign-retry-delay-seconds: 2            # Delay between retries
 
-        # API timeout and retry settings
-        api-timeout-seconds: 30           # API call timeout
-        connection-timeout-seconds: 10    # Connection timeout
-        max-retry-attempts: 3             # Number of retry attempts
-        retry-delay-seconds: 2            # Delay between retries
+      # Embedded signing settings
+      docusign-embedded-signing-enabled: true    # Enable embedded signing
+      docusign-embedded-return-url: "http://localhost:8080/api/signatures/signing-complete"
 
-        # Embedded signing settings
-        embedded-signing-enabled: true    # Enable embedded signing
-        embedded-return-url: "http://localhost:8080/api/signatures/signing-complete"
-
-        # Advanced features
-        enable-envelope-purging: false    # Auto-purge completed envelopes
-        purge-delay-days: 90             # Days to wait before purging
-        enable-bulk-operations: true     # Enable bulk envelope operations
+      # Advanced features
+      docusign-enable-envelope-purging: false    # Auto-purge completed envelopes
+      docusign-purge-delay-days: 90             # Days to wait before purging
+      docusign-enable-bulk-operations: true     # Enable bulk envelope operations
 
     # Default settings for document and signature operations
     defaults:
@@ -653,21 +648,20 @@ info:
 # Development-specific settings
 firefly:
   ecm:
-    esignature:
-      properties:
-        # Use demo environment
-        base-url: "https://demo.docusign.net/restapi"
-        oauth-base-url: "https://account-d.docusign.com"
+    properties:
+      # Use demo environment
+      docusign-base-url: "https://demo.docusign.net/restapi"
+      docusign-oauth-base-url: "https://account-d.docusign.com"
 
-        # Shorter expiration for testing
-        default-envelope-expiration-days: 7
+      # Shorter expiration for testing
+      docusign-default-envelope-expiration-days: 7
 
-        # Enable webhook for local testing (use ngrok or similar)
-        webhook-enabled: false
-        webhook-url: "https://your-ngrok-url.ngrok.io/api/webhooks/docusign"
+      # Enable webhook for local testing (use ngrok or similar)
+      docusign-webhook-enabled: false
+      docusign-webhook-url: "https://your-ngrok-url.ngrok.io/api/webhooks/docusign"
 
-        # More verbose logging
-        api-timeout-seconds: 60  # Longer timeout for debugging
+      # More verbose logging
+      docusign-api-timeout-seconds: 60  # Longer timeout for debugging
 
 # Enable debug logging for development
 logging:
@@ -690,27 +684,26 @@ server:
 # Production-specific settings
 firefly:
   ecm:
-    esignature:
-      properties:
-        # Use production environment
-        base-url: "https://na1.docusign.net/restapi"  # Adjust region as needed
-        oauth-base-url: "https://account.docusign.com"
+    properties:
+      # Use production environment
+      docusign-base-url: "https://na1.docusign.net/restapi"  # Adjust region as needed
+      docusign-oauth-base-url: "https://account.docusign.com"
 
-        # Production envelope settings
-        default-envelope-expiration-days: 30
+      # Production envelope settings
+      docusign-default-envelope-expiration-days: 30
 
-        # Enable webhooks for production
-        webhook-enabled: true
-        webhook-url: "https://yourdomain.com/api/webhooks/docusign"
-        webhook-secret: "${DOCUSIGN_WEBHOOK_SECRET}"
+      # Enable webhooks for production
+      docusign-webhook-enabled: true
+      docusign-webhook-url: "https://yourdomain.com/api/webhooks/docusign"
+      docusign-webhook-secret: "${DOCUSIGN_WEBHOOK_SECRET}"
 
-        # Production timeouts
-        api-timeout-seconds: 30
-        connection-timeout-seconds: 10
+      # Production timeouts
+      docusign-api-timeout-seconds: 30
+      docusign-connection-timeout-seconds: 10
 
-        # Enable advanced features
-        enable-envelope-purging: true
-        purge-delay-days: 90
+      # Enable advanced features
+      docusign-enable-envelope-purging: true
+      docusign-purge-delay-days: 90
 
 # Production logging (less verbose)
 logging:
@@ -891,13 +884,13 @@ public class DocuSignConfiguration {
         log.info("Configuring DocuSign API client");
 
         // Extract configuration properties
-        String integrationKey = ecmProperties.getEsignaturePropertyAsString("integration-key");
-        String userId = ecmProperties.getEsignaturePropertyAsString("user-id");
-        String accountId = ecmProperties.getEsignaturePropertyAsString("account-id");
-        String baseUrl = ecmProperties.getEsignaturePropertyAsString("base-url");
-        String oauthBaseUrl = ecmProperties.getEsignaturePropertyAsString("oauth-base-url");
-        String privateKeyPath = ecmProperties.getEsignaturePropertyAsString("private-key-path");
-        Integer tokenExpirationHours = ecmProperties.getEsignaturePropertyAsInteger("token-expiration-hours");
+        String integrationKey = ecmProperties.getAdapterPropertyAsString("docusign-integration-key");
+        String userId = ecmProperties.getAdapterPropertyAsString("docusign-user-id");
+        String accountId = ecmProperties.getAdapterPropertyAsString("docusign-account-id");
+        String baseUrl = ecmProperties.getAdapterPropertyAsString("docusign-base-url");
+        String oauthBaseUrl = ecmProperties.getAdapterPropertyAsString("docusign-oauth-base-url");
+        String privateKeyPath = ecmProperties.getAdapterPropertyAsString("docusign-private-key-path");
+        Integer tokenExpirationHours = ecmProperties.getAdapterPropertyAsInteger("docusign-token-expiration-hours");
 
         // Validate required configuration
         validateConfiguration(integrationKey, userId, accountId, baseUrl, oauthBaseUrl, privateKeyPath);
@@ -907,8 +900,8 @@ public class DocuSignConfiguration {
         apiClient.setBasePath(baseUrl);
 
         // Configure timeouts
-        Integer apiTimeout = ecmProperties.getEsignaturePropertyAsInteger("api-timeout-seconds");
-        Integer connectionTimeout = ecmProperties.getEsignaturePropertyAsInteger("connection-timeout-seconds");
+        Integer apiTimeout = ecmProperties.getAdapterPropertyAsInteger("docusign-api-timeout-seconds");
+        Integer connectionTimeout = ecmProperties.getAdapterPropertyAsInteger("docusign-connection-timeout-seconds");
 
         if (apiTimeout != null) {
             apiClient.setConnectTimeout(apiTimeout * 1000);
@@ -1081,7 +1074,7 @@ public class DocuSignSignatureEnvelopeAdapter implements SignatureEnvelopePort {
         this.apiClient = apiClient;
         this.ecmProperties = ecmProperties;
         this.documentContentPort = documentContentPort;
-        this.accountId = ecmProperties.getEsignaturePropertyAsString("account-id");
+        this.accountId = ecmProperties.getAdapterPropertyAsString("docusign-account-id");
         this.envelopesApi = new EnvelopesApi(apiClient);
 
         log.info("DocuSignSignatureEnvelopeAdapter initialized for account: {}...",
@@ -1316,7 +1309,7 @@ public class DocuSignSignatureEnvelopeAdapter implements SignatureEnvelopePort {
             RecipientViewRequest viewRequest = new RecipientViewRequest();
 
             // URL where user will be redirected after signing
-            String returnUrl = ecmProperties.getEsignaturePropertyAsString("embedded-return-url");
+            String returnUrl = ecmProperties.getAdapterPropertyAsString("docusign-embedded-return-url");
             if (returnUrl == null) {
                 returnUrl = "http://localhost:8080/api/signatures/signing-complete";
             }
@@ -1711,8 +1704,8 @@ public class DocuSignSignatureEnvelopeAdapter implements SignatureEnvelopePort {
         }
 
         // Configure webhook URL if enabled
-        Boolean webhookEnabled = ecmProperties.getEsignaturePropertyAsBoolean("webhook-enabled");
-        String webhookUrl = ecmProperties.getEsignaturePropertyAsString("webhook-url");
+        Boolean webhookEnabled = ecmProperties.getAdapterPropertyAsBoolean("docusign-webhook-enabled");
+        String webhookUrl = ecmProperties.getAdapterPropertyAsString("docusign-webhook-url");
 
         if (Boolean.TRUE.equals(webhookEnabled) && webhookUrl != null) {
             EventNotification eventNotification = new EventNotification();
@@ -1800,7 +1793,7 @@ public class DocuSignSignatureEnvelopeAdapter implements SignatureEnvelopePort {
      * Utility methods for data conversion and formatting.
      */
     private String getDefaultEnvelopeMessage() {
-        return ecmProperties.getEsignaturePropertyAsString("default-envelope-message");
+        return ecmProperties.getAdapterPropertyAsString("docusign-default-envelope-message");
     }
 
     private String formatDateForDocuSign(Instant instant) {
