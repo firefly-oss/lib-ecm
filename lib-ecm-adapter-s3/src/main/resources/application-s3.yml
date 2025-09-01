@@ -1,0 +1,43 @@
+# Firefly ECM S3 Adapter Configuration
+# This file provides example configuration for the Amazon S3 adapter
+
+# ECM Adapter Configuration
+firefly:
+  ecm:
+    adapter-type: s3
+    adapter:
+      s3:
+        # Required S3 Configuration
+        bucket-name: ${S3_BUCKET_NAME:firefly-ecm-documents}
+        region: ${AWS_REGION:us-east-1}
+        
+        # Optional S3 Authentication (use IAM roles when possible)
+        access-key: ${AWS_ACCESS_KEY_ID:}
+        secret-key: ${AWS_SECRET_ACCESS_KEY:}
+        
+        # Optional S3 Configuration
+        endpoint: ${S3_ENDPOINT:}
+        path-prefix: ${S3_PATH_PREFIX:documents/}
+        enable-versioning: ${S3_ENABLE_VERSIONING:true}
+        path-style-access: ${S3_PATH_STYLE_ACCESS:false}
+        
+        # Connection and Performance Settings
+        connection-timeout: ${S3_CONNECTION_TIMEOUT:PT30S}
+        socket-timeout: ${S3_SOCKET_TIMEOUT:PT30S}
+        max-retries: ${S3_MAX_RETRIES:3}
+        
+        # Security Settings
+        enable-encryption: ${S3_ENABLE_ENCRYPTION:true}
+        kms-key-id: ${S3_KMS_KEY_ID:}
+        storage-class: ${S3_STORAGE_CLASS:STANDARD}
+        
+        # Multipart Upload Settings
+        enable-multipart: ${S3_ENABLE_MULTIPART:true}
+        multipart-threshold: ${S3_MULTIPART_THRESHOLD:5242880}
+        multipart-part-size: ${S3_MULTIPART_PART_SIZE:5242880}
+
+# Logging Configuration for S3 Adapter
+logging:
+  level:
+    com.firefly.ecm.adapter.s3: INFO
+    software.amazon.awssdk.services.s3: WARN
