@@ -12,8 +12,8 @@ A comprehensive, production-ready Enterprise Content Management (ECM) library bu
 
 The Firefly ECM Library solves the challenge of **vendor lock-in** and **integration complexity** in enterprise content management. Instead of being tied to a single ECM system or cloud provider, organizations can:
 
-- **Switch between storage providers** (S3 ✅, Azure*, MinIO*, Alfresco*) without changing business logic
-- **Integrate multiple eSignature providers** (DocuSign ✅, Adobe Sign*) through a unified API
+- **Switch between storage providers** (S3 ✅, Azure Blob ✅, MinIO*, Alfresco*) without changing business logic
+- **Integrate multiple eSignature providers** (DocuSign ✅, Adobe Sign ✅) through a unified API
 - **Process documents intelligently** with IDP providers (AWS Textract*, Azure Form Recognizer*, Google Document AI*)
 - **Scale horizontally** with cloud-native, reactive architecture
 - **Maintain compliance** with built-in audit trails and security features
@@ -32,8 +32,10 @@ This library is organized as a **multi-module Maven project** implementing **Hex
 ```
 lib-ecm/                         # Parent POM
 ├── lib-ecm-core/                # Core module (ports, domain, infrastructure)
-├── lib-ecm-adapter-s3/          # Amazon S3 adapter implementation
+├── lib-ecm-adapter-s3/          # Amazon S3 document storage adapter
+├── lib-ecm-adapter-azure-blob/  # Microsoft Azure Blob Storage adapter
 ├── lib-ecm-adapter-docusign/    # DocuSign eSignature adapter implementation
+├── lib-ecm-adapter-adobe-sign/  # Adobe Sign eSignature adapter implementation
 └── pom.xml                      # Parent POM with dependency management
 ```
 
@@ -57,12 +59,26 @@ lib-ecm/                         # Parent POM
 - ✅ **Error Handling**: Comprehensive exception handling with resilience patterns
 - ✅ **Testing**: **100% test success rate** (21/21 tests passing) with comprehensive coverage
 
+#### **Azure Blob Storage Adapter**
+- ✅ **Complete Implementation**: All DocumentPort and DocumentContentPort methods
+- ✅ **Enterprise Features**: Blob metadata storage, container organization, access tiers
+- ✅ **Performance Optimized**: Streaming uploads/downloads, connection pooling
+- ✅ **Security**: Azure AD integration, SAS tokens, encryption at rest
+- ✅ **Error Handling**: Comprehensive exception handling with resilience patterns
+
 #### **DocuSign eSignature Adapter**
 - ✅ **Complete Implementation**: All SignatureEnvelopePort methods
 - ✅ **Document Integration**: Real document retrieval from storage for envelope creation
 - ✅ **Advanced Features**: Batch operations, template support, embedded signing URLs
 - ✅ **Error Handling**: Robust error handling and status synchronization
 - ✅ **Testing**: **100% test success rate** (10/10 tests passing) with full DocuSign SDK integration
+
+#### **Adobe Sign eSignature Adapter**
+- ✅ **Complete Implementation**: All SignatureEnvelopePort, SignatureRequestPort, and SignatureValidationPort methods
+- ✅ **Document Integration**: Real document retrieval from storage for agreement creation
+- ✅ **Advanced Features**: OAuth 2.0 authentication, embedded signing, signature validation
+- ✅ **Error Handling**: Comprehensive error handling with circuit breaker and retry patterns
+- ✅ **Comprehensive Javadoc**: Fully documented API with detailed method descriptions
 
 ### 🔄 Architecture Highlights
 
