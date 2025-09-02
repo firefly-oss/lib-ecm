@@ -17,6 +17,7 @@ package com.firefly.core.ecm.config;
 
 import com.firefly.core.ecm.adapter.AdapterRegistry;
 import com.firefly.core.ecm.adapter.AdapterSelector;
+import com.firefly.core.ecm.adapter.noop.NoOpAdapterFactory;
 import com.firefly.core.ecm.port.document.*;
 import com.firefly.core.ecm.port.folder.*;
 import com.firefly.core.ecm.port.security.*;
@@ -101,16 +102,20 @@ public class EcmAutoConfiguration {
      * The document port provides core functionality for creating, reading, updating,
      * and deleting documents in the ECM system.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentPort implementation
-     * @throws IllegalStateException if no suitable DocumentPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentPort implementation (real adapter or no-op fallback)
      * @see DocumentPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "document-management", havingValue = "true", matchIfMissing = true)
-    public DocumentPort documentPort(EcmPortProvider portProvider) {
+    public DocumentPort documentPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentPort);
     }
 
     /**
@@ -120,16 +125,20 @@ public class EcmAutoConfiguration {
      * The document content port handles the storage and retrieval of document binary
      * content, including upload, download, and streaming operations.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentContentPort implementation
-     * @throws IllegalStateException if no suitable DocumentContentPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentContentPort implementation (real adapter or no-op fallback)
      * @see DocumentContentPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "content-storage", havingValue = "true", matchIfMissing = true)
-    public DocumentContentPort documentContentPort(EcmPortProvider portProvider) {
+    public DocumentContentPort documentContentPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentContentPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentContentPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentContentPort);
     }
     
     /**
@@ -139,16 +148,20 @@ public class EcmAutoConfiguration {
      * The document version port provides functionality for managing document versions,
      * including creating new versions, retrieving version history, and comparing versions.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentVersionPort implementation
-     * @throws IllegalStateException if no suitable DocumentVersionPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentVersionPort implementation (real adapter or no-op fallback)
      * @see DocumentVersionPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "versioning", havingValue = "true", matchIfMissing = true)
-    public DocumentVersionPort documentVersionPort(EcmPortProvider portProvider) {
+    public DocumentVersionPort documentVersionPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentVersionPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentVersionPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentVersionPort);
     }
 
     /**
@@ -158,16 +171,20 @@ public class EcmAutoConfiguration {
      * The document search port provides functionality for searching documents by
      * metadata, content, and other criteria using various search strategies.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentSearchPort implementation
-     * @throws IllegalStateException if no suitable DocumentSearchPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentSearchPort implementation (real adapter or no-op fallback)
      * @see DocumentSearchPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "search", havingValue = "true", matchIfMissing = true)
-    public DocumentSearchPort documentSearchPort(EcmPortProvider portProvider) {
+    public DocumentSearchPort documentSearchPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentSearchPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentSearchPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentSearchPort);
     }
 
     /**
@@ -177,16 +194,20 @@ public class EcmAutoConfiguration {
      * The folder port provides functionality for creating, reading, updating, and
      * deleting folders in the ECM system.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a FolderPort implementation
-     * @throws IllegalStateException if no suitable FolderPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a FolderPort implementation (real adapter or no-op fallback)
      * @see FolderPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "folder-management", havingValue = "true", matchIfMissing = true)
-    public FolderPort folderPort(EcmPortProvider portProvider) {
+    public FolderPort folderPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getFolderPort()
-            .orElseThrow(() -> new IllegalStateException("No FolderPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createFolderPort);
     }
 
     /**
@@ -196,16 +217,20 @@ public class EcmAutoConfiguration {
      * The folder hierarchy port provides functionality for managing hierarchical
      * folder structures, including tree navigation, path resolution, and parent-child relationships.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a FolderHierarchyPort implementation
-     * @throws IllegalStateException if no suitable FolderHierarchyPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a FolderHierarchyPort implementation (real adapter or no-op fallback)
      * @see FolderHierarchyPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "folder-hierarchy", havingValue = "true", matchIfMissing = true)
-    public FolderHierarchyPort folderHierarchyPort(EcmPortProvider portProvider) {
+    public FolderHierarchyPort folderHierarchyPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getFolderHierarchyPort()
-            .orElseThrow(() -> new IllegalStateException("No FolderHierarchyPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createFolderHierarchyPort);
     }
 
     /**
@@ -215,18 +240,22 @@ public class EcmAutoConfiguration {
      * The permission port provides functionality for managing user and group permissions
      * on documents and folders, including granting, revoking, and checking access rights.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a PermissionPort implementation
-     * @throws IllegalStateException if no suitable PermissionPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a PermissionPort implementation (real adapter or no-op fallback)
      * @see PermissionPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "permissions", havingValue = "true", matchIfMissing = true)
-    public PermissionPort permissionPort(EcmPortProvider portProvider) {
+    public PermissionPort permissionPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getPermissionPort()
-            .orElseThrow(() -> new IllegalStateException("No PermissionPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createPermissionPort);
     }
-    
+
     /**
      * Configures the document security port for document-level security operations.
      *
@@ -234,16 +263,20 @@ public class EcmAutoConfiguration {
      * The document security port provides functionality for applying security policies,
      * encryption, digital rights management, and other security-related operations on documents.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentSecurityPort implementation
-     * @throws IllegalStateException if no suitable DocumentSecurityPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentSecurityPort implementation (real adapter or no-op fallback)
      * @see DocumentSecurityPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "security", havingValue = "true", matchIfMissing = true)
-    public DocumentSecurityPort documentSecurityPort(EcmPortProvider portProvider) {
+    public DocumentSecurityPort documentSecurityPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentSecurityPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentSecurityPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentSecurityPort);
     }
 
     /**
@@ -253,16 +286,20 @@ public class EcmAutoConfiguration {
      * The audit port provides functionality for logging user actions, system events,
      * and maintaining compliance records for regulatory requirements.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return an AuditPort implementation
-     * @throws IllegalStateException if no suitable AuditPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return an AuditPort implementation (real adapter or no-op fallback)
      * @see AuditPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "auditing", havingValue = "true", matchIfMissing = true)
-    public AuditPort auditPort(EcmPortProvider portProvider) {
+    public AuditPort auditPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getAuditPort()
-            .orElseThrow(() -> new IllegalStateException("No AuditPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createAuditPort);
     }
 
     /**
@@ -272,16 +309,20 @@ public class EcmAutoConfiguration {
      * The signature envelope port provides functionality for creating, managing, and
      * tracking signature envelopes that contain documents requiring electronic signatures.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a SignatureEnvelopePort implementation
-     * @throws IllegalStateException if no suitable SignatureEnvelopePort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a SignatureEnvelopePort implementation (real adapter or no-op fallback)
      * @see SignatureEnvelopePort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "esignature", havingValue = "true", matchIfMissing = false)
-    public SignatureEnvelopePort signatureEnvelopePort(EcmPortProvider portProvider) {
+    public SignatureEnvelopePort signatureEnvelopePort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getSignatureEnvelopePort()
-            .orElseThrow(() -> new IllegalStateException("No SignatureEnvelopePort adapter available"));
+            .orElseGet(noOpAdapterFactory::createSignatureEnvelopePort);
     }
 
     /**
@@ -291,16 +332,20 @@ public class EcmAutoConfiguration {
      * The signature request port provides functionality for creating, sending, and
      * tracking individual signature requests within signature envelopes.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a SignatureRequestPort implementation
-     * @throws IllegalStateException if no suitable SignatureRequestPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a SignatureRequestPort implementation (real adapter or no-op fallback)
      * @see SignatureRequestPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "esignature", havingValue = "true", matchIfMissing = false)
-    public SignatureRequestPort signatureRequestPort(EcmPortProvider portProvider) {
+    public SignatureRequestPort signatureRequestPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getSignatureRequestPort()
-            .orElseThrow(() -> new IllegalStateException("No SignatureRequestPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createSignatureRequestPort);
     }
 
     /**
@@ -310,16 +355,20 @@ public class EcmAutoConfiguration {
      * The signature validation port provides functionality for validating the authenticity,
      * integrity, and legal compliance of electronic signatures.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a SignatureValidationPort implementation
-     * @throws IllegalStateException if no suitable SignatureValidationPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a SignatureValidationPort implementation (real adapter or no-op fallback)
      * @see SignatureValidationPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "esignature", havingValue = "true", matchIfMissing = false)
-    public SignatureValidationPort signatureValidationPort(EcmPortProvider portProvider) {
+    public SignatureValidationPort signatureValidationPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getSignatureValidationPort()
-            .orElseThrow(() -> new IllegalStateException("No SignatureValidationPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createSignatureValidationPort);
     }
 
     /**
@@ -329,16 +378,20 @@ public class EcmAutoConfiguration {
      * The signature proof port provides functionality for generating tamper-evident
      * proof documents and certificates that demonstrate the validity of electronic signatures.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a SignatureProofPort implementation
-     * @throws IllegalStateException if no suitable SignatureProofPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a SignatureProofPort implementation (real adapter or no-op fallback)
      * @see SignatureProofPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "esignature", havingValue = "true", matchIfMissing = false)
-    public SignatureProofPort signatureProofPort(EcmPortProvider portProvider) {
+    public SignatureProofPort signatureProofPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getSignatureProofPort()
-            .orElseThrow(() -> new IllegalStateException("No SignatureProofPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createSignatureProofPort);
     }
 
     /**
@@ -349,16 +402,20 @@ public class EcmAutoConfiguration {
      * from documents using various IDP technologies such as OCR, handwriting recognition,
      * and advanced text analysis.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentExtractionPort implementation
-     * @throws IllegalStateException if no suitable DocumentExtractionPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentExtractionPort implementation (real adapter or no-op fallback)
      * @see DocumentExtractionPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DocumentExtractionPort documentExtractionPort(EcmPortProvider portProvider) {
+    public DocumentExtractionPort documentExtractionPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentExtractionPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentExtractionPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentExtractionPort);
     }
 
     /**
@@ -369,16 +426,20 @@ public class EcmAutoConfiguration {
      * and categorizing documents using various IDP technologies such as machine learning
      * models, rule-based systems, and template matching.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentClassificationPort implementation
-     * @throws IllegalStateException if no suitable DocumentClassificationPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentClassificationPort implementation (real adapter or no-op fallback)
      * @see DocumentClassificationPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DocumentClassificationPort documentClassificationPort(EcmPortProvider portProvider) {
+    public DocumentClassificationPort documentClassificationPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentClassificationPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentClassificationPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentClassificationPort);
     }
 
     /**
@@ -389,16 +450,20 @@ public class EcmAutoConfiguration {
      * extracted data using various validation techniques including business rule validation,
      * format verification, data consistency checks, and compliance validation.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DocumentValidationPort implementation
-     * @throws IllegalStateException if no suitable DocumentValidationPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DocumentValidationPort implementation (real adapter or no-op fallback)
      * @see DocumentValidationPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DocumentValidationPort documentValidationPort(EcmPortProvider portProvider) {
+    public DocumentValidationPort documentValidationPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDocumentValidationPort()
-            .orElseThrow(() -> new IllegalStateException("No DocumentValidationPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDocumentValidationPort);
     }
 
     /**
@@ -408,15 +473,19 @@ public class EcmAutoConfiguration {
      * The data extraction port provides functionality for extracting structured data from
      * documents including forms, tables, key-value pairs, and other organized data elements.</p>
      *
+     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
+     * to prevent application startup failures while clearly indicating that the
+     * functionality is not available.</p>
+     *
      * @param portProvider the ECM port provider
-     * @return a DataExtractionPort implementation
-     * @throws IllegalStateException if no suitable DataExtractionPort adapter is available
+     * @param noOpAdapterFactory factory for creating no-op adapters
+     * @return a DataExtractionPort implementation (real adapter or no-op fallback)
      * @see DataExtractionPort
      */
     @Bean
     @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DataExtractionPort dataExtractionPort(EcmPortProvider portProvider) {
+    public DataExtractionPort dataExtractionPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
         return portProvider.getDataExtractionPort()
-            .orElseThrow(() -> new IllegalStateException("No DataExtractionPort adapter available"));
+            .orElseGet(noOpAdapterFactory::createDataExtractionPort);
     }
 }
