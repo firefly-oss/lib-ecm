@@ -272,7 +272,7 @@ class AdobeSignSignatureEnvelopeAdapterTest {
     void sendEnvelope_ShouldSendEnvelopeSuccessfully() {
         // Given
         UUID envelopeId = UUID.randomUUID();
-        Long sentBy = Long.randomUUID();
+        UUID sentBy = UUID.randomUUID();
 
         // Mock OAuth token refresh
         ObjectNode tokenResponse = objectMapper.createObjectNode();
@@ -313,7 +313,7 @@ class AdobeSignSignatureEnvelopeAdapterTest {
     void voidEnvelope_ShouldVoidEnvelopeSuccessfully() {
         // Given
         UUID envelopeId = UUID.randomUUID();
-        Long voidedBy = Long.randomUUID();
+        UUID voidedBy = UUID.randomUUID();
         String voidReason = "Test cancellation";
 
         // Mock OAuth token refresh
