@@ -129,8 +129,8 @@ public interface SignatureEnvelopePort {
      * and sign the documents. The envelope status will be updated to reflect the
      * current signing progress.</p>
      *
-     * @param envelopeId the unique UUID identifier of the envelope to send
-     * @param sentBy the UUID of the user sending the envelope (for audit purposes)
+     * @param envelopeId the unique Long identifier of the envelope to send
+     * @param sentBy the Long of the user sending the envelope (for audit purposes)
      * @return a Mono containing the sent envelope with updated status and metadata
      * @throws IllegalArgumentException if envelopeId or sentBy is null
      * @throws RuntimeException if envelope is not found, not in sendable state, or sending fails

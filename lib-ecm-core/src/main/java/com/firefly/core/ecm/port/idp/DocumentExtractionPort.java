@@ -89,7 +89,7 @@ public interface DocumentExtractionPort {
      *   <li>Location and layout information capture</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract text from
+     * @param documentId the Long of the document to extract text from
      * @param extractionType the type of text extraction to perform
      * @return a Mono containing the extracted text data with metadata
      * @throws IllegalArgumentException if documentId is null or extractionType is not supported
@@ -114,7 +114,7 @@ public interface DocumentExtractionPort {
      *   <li><code>includeCoordinates</code> - Whether to include text position coordinates</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract text from
+     * @param documentId the Long of the document to extract text from
      * @param extractionType the type of text extraction to perform
      * @param config configuration parameters for the extraction process
      * @return a Mono containing the extracted text data with metadata
@@ -136,7 +136,7 @@ public interface DocumentExtractionPort {
      *   <li>Full text with table and form field extraction</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to process
+     * @param documentId the Long of the document to process
      * @param extractionTypes list of extraction types to perform
      * @return a Flux of extracted data, one for each successful extraction type
      * @throws IllegalArgumentException if documentId is null or extractionTypes is empty
@@ -198,7 +198,7 @@ public interface DocumentExtractionPort {
      * operations that were started asynchronously. It provides status information
      * including progress percentage, estimated completion time, and any errors.</p>
      * 
-     * @param requestId the UUID of the processing request to check
+     * @param requestId the Long of the processing request to check
      * @return a Mono containing the current processing request status
      * @throws IllegalArgumentException if requestId is null
      * @see DocumentProcessingRequest
@@ -212,7 +212,7 @@ public interface DocumentExtractionPort {
      * Cancellation may not be immediate and depends on the current processing
      * stage and the capabilities of the underlying IDP provider.</p>
      * 
-     * @param requestId the UUID of the processing request to cancel
+     * @param requestId the Long of the processing request to cancel
      * @return a Mono containing true if cancellation was successful, false otherwise
      * @throws IllegalArgumentException if requestId is null
      */

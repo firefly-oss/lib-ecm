@@ -30,7 +30,7 @@ import java.util.UUID;
 
 /**
  * Signature envelope entity representing a collection of documents for signing.
- * Uses UUID for envelope ID and UUID for user IDs as per updated Firefly standards.
+ * Uses Long for envelope ID and Long for user IDs as per updated Firefly standards.
  */
 @Data
 @Builder(toBuilder = true)
@@ -80,7 +80,7 @@ public class SignatureEnvelope {
     /**
      * User who sent the envelope (UUID)
      */
-    private final UUID sentBy;
+    private final Long sentBy;
     
     /**
      * Envelope sent timestamp

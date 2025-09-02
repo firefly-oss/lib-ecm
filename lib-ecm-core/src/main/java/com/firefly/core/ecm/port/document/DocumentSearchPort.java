@@ -123,7 +123,7 @@ public interface DocumentSearchPort {
      * @param limit maximum number of results to return
      * @return Flux of documents created by the specified user
      */
-    Flux<Document> searchByCreator(Long createdBy, Integer limit);
+    Flux<Document> searchByCreator(UUID createdBy, Integer limit);
     
     /**
      * Advanced search with multiple criteria.

@@ -76,7 +76,7 @@ public interface SignatureRequestPort {
      * @param signerId the signer user ID
      * @return Flux of signature requests for the signer
      */
-    Flux<SignatureRequest> getRequestsBySigner(Long signerId);
+    Flux<SignatureRequest> getRequestsBySigner(UUID signerId);
     
     /**
      * Get signature requests by signer email.
@@ -110,7 +110,7 @@ public interface SignatureRequestPort {
      * @param signerId the signer user ID
      * @return Flux of pending signature requests
      */
-    Flux<SignatureRequest> getPendingRequestsBySigner(Long signerId);
+    Flux<SignatureRequest> getPendingRequestsBySigner(UUID signerId);
     
     /**
      * Get pending signature requests by email.

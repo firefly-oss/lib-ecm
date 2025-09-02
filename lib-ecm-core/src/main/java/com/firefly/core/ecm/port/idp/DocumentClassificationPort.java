@@ -85,7 +85,7 @@ public interface DocumentClassificationPort {
      *   <li>Confidence scoring and alternative suggestions</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to classify
+     * @param documentId the Long of the document to classify
      * @return a Mono containing the classification result with confidence scores
      * @throws IllegalArgumentException if documentId is null
      * @see ClassificationResult
@@ -110,7 +110,7 @@ public interface DocumentClassificationPort {
      *   <li><code>maxAlternatives</code> - Maximum number of alternative classifications</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to classify
+     * @param documentId the Long of the document to classify
      * @param config configuration parameters for the classification process
      * @return a Mono containing the classification result with metadata
      * @throws IllegalArgumentException if documentId is null or config contains invalid parameters
@@ -175,7 +175,7 @@ public interface DocumentClassificationPort {
      *   <li>Semantic similarity scoring</li>
      * </ul>
      * 
-     * @param referenceDocumentId the UUID of the reference document
+     * @param referenceDocumentId the Long of the reference document
      * @param candidateDocumentIds list of candidate document UUIDs to classify
      * @param similarityThreshold minimum similarity score (0.0 to 1.0)
      * @return a Flux of classification results for similar documents

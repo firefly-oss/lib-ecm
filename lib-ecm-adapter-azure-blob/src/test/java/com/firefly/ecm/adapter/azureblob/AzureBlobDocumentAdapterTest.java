@@ -340,8 +340,8 @@ class AzureBlobDocumentAdapterTest {
     void getDocumentsByFolder_ShouldReturnDocumentsInFolder() throws Exception {
         // Given
         UUID folderId = UUID.randomUUID();
-        UUID documentId1 = UUID.randomUUID();
-        UUID documentId2 = UUID.randomUUID();
+        Long documentId1 = Long.randomUUID();
+        Long documentId2 = Long.randomUUID();
 
         Document document1 = Document.builder()
             .id(documentId1)

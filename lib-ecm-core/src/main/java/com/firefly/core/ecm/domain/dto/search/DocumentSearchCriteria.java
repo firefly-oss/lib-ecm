@@ -67,7 +67,7 @@ public class DocumentSearchCriteria {
     /**
      * Document modifier ID
      */
-    private final Long modifiedBy;
+    private final UUID modifiedBy;
     
     /**
      * Document status filter

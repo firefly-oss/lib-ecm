@@ -176,7 +176,7 @@ public class S3DocumentAdapter implements DocumentPort {
      *
      * <p>The binary content can be retrieved separately using the DocumentContentPort.</p>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @return a Mono containing the document metadata if found, empty Mono if not found
      * @throws IllegalArgumentException if documentId is null
      * @throws RuntimeException if S3 operations fail

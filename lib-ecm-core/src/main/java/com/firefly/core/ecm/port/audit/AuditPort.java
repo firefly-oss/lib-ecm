@@ -65,7 +65,7 @@ public interface AuditPort {
      * @param userId the user ID
      * @return Flux of audit events for the user
      */
-    Flux<AuditEvent> getUserAuditTrail(Long userId);
+    Flux<AuditEvent> getUserAuditTrail(UUID userId);
     
     /**
      * Get audit events by event type.

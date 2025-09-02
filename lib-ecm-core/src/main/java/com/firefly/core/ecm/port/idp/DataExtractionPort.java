@@ -86,7 +86,7 @@ public interface DataExtractionPort {
      *   <li>Value extraction and normalization</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract form data from
+     * @param documentId the Long of the document to extract form data from
      * @return a Flux of extracted form field data
      * @throws IllegalArgumentException if documentId is null
      * @see ExtractedData
@@ -109,7 +109,7 @@ public interface DataExtractionPort {
      *   <li>Merged cell handling</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract table data from
+     * @param documentId the Long of the document to extract table data from
      * @return a Flux of extracted table data organized by rows and columns
      * @throws IllegalArgumentException if documentId is null
      */
@@ -131,7 +131,7 @@ public interface DataExtractionPort {
      *   <li><code>outputFormat</code> - Desired output format (structured, flat, etc.)</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract table data from
+     * @param documentId the Long of the document to extract table data from
      * @param config configuration parameters for table extraction
      * @return a Flux of extracted table data with applied configuration
      * @throws IllegalArgumentException if documentId is null or config contains invalid parameters
@@ -154,7 +154,7 @@ public interface DataExtractionPort {
      *   <li>Confidence scoring for associations</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract key-value pairs from
+     * @param documentId the Long of the document to extract key-value pairs from
      * @return a Flux of extracted key-value pair data
      * @throws IllegalArgumentException if documentId is null
      */
@@ -176,7 +176,7 @@ public interface DataExtractionPort {
      *   <li>Total and subtotal identification</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract line items from
+     * @param documentId the Long of the document to extract line items from
      * @return a Flux of extracted line item data
      * @throws IllegalArgumentException if documentId is null
      */
@@ -198,7 +198,7 @@ public interface DataExtractionPort {
      *   <li>High-accuracy extraction for known formats</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract data from
+     * @param documentId the Long of the document to extract data from
      * @param templateId the identifier of the template to use
      * @return a Mono containing all extracted data according to the template
      * @throws IllegalArgumentException if documentId or templateId is null
@@ -235,7 +235,7 @@ public interface DataExtractionPort {
      *   <li>Context-aware extraction</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to extract entities from
+     * @param documentId the Long of the document to extract entities from
      * @param entityTypes list of entity types to extract (e.g., "DATE", "MONEY", "PERSON")
      * @return a Flux of extracted entity data with relationships
      * @throws IllegalArgumentException if documentId is null or entityTypes is empty

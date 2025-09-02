@@ -50,9 +50,9 @@ public class Permission {
     private final ResourceType resourceType;
     
     /**
-     * Principal ID (user or group Long ID)
+     * Principal ID (user or group UUID ID)
      */
-    private final Long principalId;
+    private final UUID principalId;
     
     /**
      * Principal type (USER or GROUP)

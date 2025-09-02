@@ -77,7 +77,7 @@ public class DocumentProcessingRequest {
      * <p>Identifies the user who initiated the IDP processing
      * request for audit and authorization purposes.</p>
      */
-    private final UUID requestedBy;
+    private final Long requestedBy;
 
     /**
      * Owner of the document being processed (UUID).

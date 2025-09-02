@@ -29,7 +29,7 @@ import java.util.UUID;
 
 /**
  * Signature request entity representing a request for a specific signer.
- * Uses UUID for request ID and UUID for user IDs as per Firefly standards.
+ * Uses Long for request ID and Long for user IDs as per Firefly standards.
  */
 @Data
 @Builder(toBuilder = true)

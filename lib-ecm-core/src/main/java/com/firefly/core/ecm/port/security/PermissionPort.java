@@ -56,7 +56,7 @@ public interface PermissionPort {
      * @param principalType the principal type
      * @return Mono indicating completion
      */
-    Mono<Void> revokeAllPermissions(UUID resourceId, ResourceType resourceType, Long principalId, PrincipalType principalType);
+    Mono<Void> revokeAllPermissions(UUID resourceId, ResourceType resourceType, UUID principalId, PrincipalType principalType);
     
     /**
      * Check if a principal has a specific permission on a resource.
@@ -68,7 +68,7 @@ public interface PermissionPort {
      * @param permissionType the permission type to check
      * @return Mono containing true if permission is granted, false otherwise
      */
-    Mono<Boolean> hasPermission(UUID resourceId, ResourceType resourceType, Long principalId, PrincipalType principalType, PermissionType permissionType);
+    Mono<Boolean> hasPermission(UUID resourceId, ResourceType resourceType, UUID principalId, PrincipalType principalType, PermissionType permissionType);
     
     /**
      * Get all permissions for a resource.
@@ -86,7 +86,7 @@ public interface PermissionPort {
      * @param principalType the principal type
      * @return Flux of permissions for the principal
      */
-    Flux<Permission> getPrincipalPermissions(Long principalId, PrincipalType principalType);
+    Flux<Permission> getPrincipalPermissions(UUID principalId, PrincipalType principalType);
     
     /**
      * Get effective permissions for a principal on a resource (including inherited).
@@ -97,7 +97,7 @@ public interface PermissionPort {
      * @param principalType the principal type
      * @return Flux of effective permissions
      */
-    Flux<Permission> getEffectivePermissions(UUID resourceId, ResourceType resourceType, Long principalId, PrincipalType principalType);
+    Flux<Permission> getEffectivePermissions(UUID resourceId, ResourceType resourceType, UUID principalId, PrincipalType principalType);
     
     /**
      * Get all permission types that a principal has on a resource.
@@ -108,7 +108,7 @@ public interface PermissionPort {
      * @param principalType the principal type
      * @return Mono containing set of permission types
      */
-    Mono<Set<PermissionType>> getGrantedPermissionTypes(UUID resourceId, ResourceType resourceType, Long principalId, PrincipalType principalType);
+    Mono<Set<PermissionType>> getGrantedPermissionTypes(UUID resourceId, ResourceType resourceType, UUID principalId, PrincipalType principalType);
     
     /**
      * Update an existing permission.

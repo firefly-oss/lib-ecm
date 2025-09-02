@@ -100,7 +100,7 @@ public interface FolderHierarchyPort {
      * @param folderId the folder ID
      * @return Mono containing the total size in bytes
      */
-    Mono<Long> getTotalFolderSize(UUID folderId);
+    Mono<UUID> getTotalFolderSize(UUID folderId);
     
     /**
      * Get the count of subfolders (direct children only).

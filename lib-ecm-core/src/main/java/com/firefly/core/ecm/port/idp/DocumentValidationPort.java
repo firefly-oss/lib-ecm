@@ -86,7 +86,7 @@ public interface DocumentValidationPort {
      *   <li>Quality assessment and confidence scoring</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to validate
+     * @param documentId the Long of the document to validate
      * @param validationLevel the level of validation rigor to apply
      * @return a Mono containing the validation result with detailed findings
      * @throws IllegalArgumentException if documentId is null or validationLevel is not supported
@@ -133,7 +133,7 @@ public interface DocumentValidationPort {
      *   <li><code>business_rules</code> - Domain-specific validation logic</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to validate
+     * @param documentId the Long of the document to validate
      * @param validationRules custom validation rules and constraints
      * @return a Mono containing the validation result with rule-specific findings
      * @throws IllegalArgumentException if documentId is null or validationRules is invalid
@@ -177,7 +177,7 @@ public interface DocumentValidationPort {
      *   <li>Industry standards (ISO, ANSI, IEEE)</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to validate
+     * @param documentId the Long of the document to validate
      * @param complianceStandard the regulatory or compliance standard to validate against
      * @param complianceConfig configuration parameters for compliance validation
      * @return a Mono containing the compliance validation result
@@ -202,7 +202,7 @@ public interface DocumentValidationPort {
      *   <li>Chain of custody validation</li>
      * </ul>
      * 
-     * @param documentId the UUID of the document to validate
+     * @param documentId the Long of the document to validate
      * @return a Mono containing the integrity validation result
      * @throws IllegalArgumentException if documentId is null
      */

@@ -57,7 +57,7 @@ public class AuditSearchCriteria {
     /**
      * User ID to search for
      */
-    private final Long userId;
+    private final UUID userId;
     
     /**
      * Session ID to search for

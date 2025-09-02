@@ -192,7 +192,7 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
      *   <li>Returns the request with current status and metadata</li>
      * </ul>
      *
-     * @param requestId the unique UUID identifier of the signature request to retrieve
+     * @param requestId the unique Long identifier of the signature request to retrieve
      * @return a Mono containing the signature request if found, empty Mono if not found
      * @throws IllegalArgumentException if requestId is null
      * @throws RuntimeException if the request mapping is not found or Adobe Sign API call fails
@@ -302,7 +302,7 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
      * <p>Delegation is typically used when the original signer is unavailable or
      * when signing authority needs to be transferred to another authorized person.</p>
      *
-     * @param requestId the unique UUID identifier of the signature request to delegate
+     * @param requestId the unique Long identifier of the signature request to delegate
      * @param delegateEmail the email address of the person receiving the delegation
      * @param delegateName the full name of the person receiving the delegation
      * @return a Mono containing the updated signature request with delegate information
@@ -362,7 +362,7 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
      * <p>This is useful for reminding individual signers about their pending
      * signature tasks without affecting other participants in the envelope.</p>
      *
-     * @param requestId the unique UUID identifier of the signature request
+     * @param requestId the unique Long identifier of the signature request
      * @return a Mono that completes when the notification resend is finished
      * @throws IllegalArgumentException if requestId is null
      * @throws RuntimeException if request is not found, not in pending state, or Adobe Sign API call fails
@@ -404,7 +404,7 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
      * <p>This method is typically called when signature validation confirms
      * that all required signatures have been successfully applied.</p>
      *
-     * @param requestId the unique UUID identifier of the signature request
+     * @param requestId the unique Long identifier of the signature request
      * @param completedAt the timestamp when the request was completed
      * @return a Mono containing the updated signature request with completed status
      * @throws IllegalArgumentException if requestId or completedAt is null
@@ -516,7 +516,7 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
     }
 
     @Override
-    public Flux<SignatureRequest> getPendingRequestsBySigner(Long signerId) {
+    public Flux<SignatureRequest> getPendingRequestsBySigner(UUID signerId) {
         return ensureValidAccessToken()
             .flatMapMany(token -> {
                 return webClient.get()
@@ -607,7 +607,7 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
     }
 
     @Override
-    public Flux<SignatureRequest> getRequestsBySigner(Long signerId) {
+    public Flux<SignatureRequest> getRequestsBySigner(UUID signerId) {
         return ensureValidAccessToken()
             .flatMapMany(token -> {
                 return webClient.get()
@@ -938,7 +938,7 @@ public class AdobeSignSignatureRequestAdapter implements SignatureRequestPort {
     /**
      * Converts agreement to signature requests for a specific signer ID.
      */
-    private Flux<SignatureRequest> convertAgreementToSignatureRequestsForSigner(JsonNode agreementNode, Long signerId) {
+    private Flux<SignatureRequest> convertAgreementToSignatureRequestsForSigner(JsonNode agreementNode, UUID signerId) {
         // Extract participants for this specific signer ID
         if (agreementNode.has("participantSetInfos")) {
             return Flux.fromIterable(agreementNode.get("participantSetInfos"))

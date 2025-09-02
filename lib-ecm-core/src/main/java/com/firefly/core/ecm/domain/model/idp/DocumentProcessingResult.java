@@ -31,7 +31,7 @@ import java.util.UUID;
  * 
  * <p>This entity represents the complete results of a document processing request,
  * including extracted data, classification results, validation outcomes, and
- * processing metadata. Uses UUID for result ID and references.</p>
+ * processing metadata. Uses Long for result ID and references.</p>
  * 
  * <p>The processing result contains:</p>
  * <ul>

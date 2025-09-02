@@ -68,10 +68,10 @@ import java.util.UUID;
 public class Document {
 
     /**
-     * Unique document identifier using UUID format.
+     * Unique document identifier using Long format.
      *
      * <p>This serves as the primary key for the document and is used for all
-     * document references throughout the ECM system. The UUID ensures global
+     * document references throughout the ECM system. The Long ensures global
      * uniqueness and prevents ID collisions across distributed systems.</p>
      */
     private final UUID id;
@@ -163,7 +163,7 @@ public class Document {
     private final DocumentStatus status;
 
     /**
-     * UUID of the parent folder containing this document.
+     * Long of the parent folder containing this document.
      *
      * <p>Reference to the folder where this document is located. Can be null
      * for documents in the root folder. Used for hierarchical organization
@@ -174,7 +174,7 @@ public class Document {
     /**
      * User ID of the document owner.
      *
-     * <p>UUID identifier of the user who owns this document. The owner typically
+     * <p>Long identifier of the user who owns this document. The owner typically
      * has full control over the document including the ability to delete it
      * and modify permissions.</p>
      */
@@ -183,7 +183,7 @@ public class Document {
     /**
      * User ID of the person who originally created the document.
      *
-     * <p>UUID identifier of the user who first uploaded or created this document
+     * <p>Long identifier of the user who first uploaded or created this document
      * in the ECM system. This value is immutable and provides audit trail
      * information for compliance and tracking purposes.</p>
      */
@@ -192,7 +192,7 @@ public class Document {
     /**
      * User ID of the person who last modified the document.
      *
-     * <p>UUID identifier of the user who most recently updated the document
+     * <p>Long identifier of the user who most recently updated the document
      * content or metadata. Updated automatically when document changes are made.</p>
      */
     private final UUID modifiedBy;

@@ -25,7 +25,7 @@ import java.util.UUID;
 
 /**
  * Folder entity representing a hierarchical folder structure in the ECM system.
- * Uses UUID for folder ID and UUID for owner/user IDs as per updated Firefly standards.
+ * Uses Long for folder ID and Long for owner/user IDs as per updated Firefly standards.
  */
 @Data
 @Builder(toBuilder = true)

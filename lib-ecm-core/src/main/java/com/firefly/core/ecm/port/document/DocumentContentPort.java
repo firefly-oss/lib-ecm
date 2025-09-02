@@ -73,7 +73,7 @@ public interface DocumentContentPort {
      *   <li>Handle storage errors gracefully</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @param content the binary content as a byte array
      * @param mimeType the MIME type of the content (e.g., "application/pdf")
      * @return a Mono containing the storage path where content was stored
@@ -97,7 +97,7 @@ public interface DocumentContentPort {
      *   <li>Better performance for network transfers</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @param contentStream the reactive stream of DataBuffer chunks containing the content
      * @param mimeType the MIME type of the content
      * @param contentLength the expected total content length in bytes (may be null if unknown)
@@ -121,7 +121,7 @@ public interface DocumentContentPort {
      *   <li>Legacy APIs require byte array input</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @return a Mono containing the complete document content, empty if not found
      * @throws IllegalArgumentException if documentId is null
      * @see #getContentStream(UUID) for memory-efficient alternative
@@ -143,7 +143,7 @@ public interface DocumentContentPort {
      *   <li>Better user experience for large downloads</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @return a Flux of DataBuffer chunks containing the document content
      * @throws IllegalArgumentException if documentId is null
      */
@@ -192,7 +192,7 @@ public interface DocumentContentPort {
      *   <li>Content is locked or in use by other operations</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @return a Mono that completes when the deletion is finished
      * @throws IllegalArgumentException if documentId is null
      * @throws ContentDeletionException if the content cannot be deleted
@@ -220,7 +220,7 @@ public interface DocumentContentPort {
      * retrieving the actual content. It's useful for validation, conditional
      * logic, and system health checks.</p>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @return a Mono containing true if content exists, false otherwise
      * @throws IllegalArgumentException if documentId is null
      */
@@ -233,7 +233,7 @@ public interface DocumentContentPort {
      * without retrieving the actual content. The size information is useful
      * for storage calculations, transfer planning, and user interface display.</p>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @return a Mono containing the content size in bytes, empty if content not found
      * @throws IllegalArgumentException if documentId is null
      */
@@ -253,7 +253,7 @@ public interface DocumentContentPort {
      *   <li>MD5 (fast but less secure)</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @param algorithm the checksum algorithm to use (e.g., "SHA-256", "MD5")
      * @return a Mono containing the calculated checksum as a hexadecimal string
      * @throws IllegalArgumentException if documentId or algorithm is null
@@ -275,7 +275,7 @@ public interface DocumentContentPort {
      *   <li>Returns true if they match, false otherwise</li>
      * </ol>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @param expectedChecksum the expected checksum value to compare against
      * @param algorithm the checksum algorithm to use for calculation
      * @return a Mono containing true if checksums match, false otherwise

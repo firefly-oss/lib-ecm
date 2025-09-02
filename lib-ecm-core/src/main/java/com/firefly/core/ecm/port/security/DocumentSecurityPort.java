@@ -55,7 +55,7 @@ public interface DocumentSecurityPort {
      * @param operation the operation being performed
      * @return Mono containing true if access is allowed, false otherwise
      */
-    Mono<Boolean> canAccessDocument(UUID documentId, Long userId, String operation);
+    Mono<Boolean> canAccessDocument(UUID documentId, UUID userId, String operation);
     
     /**
      * Validate document access based on security policies.
@@ -66,7 +66,7 @@ public interface DocumentSecurityPort {
      * @param userAgent the client user agent
      * @return Mono containing true if access is valid, false otherwise
      */
-    Mono<Boolean> validateAccess(Document document, Long userId, String ipAddress, String userAgent);
+    Mono<Boolean> validateAccess(Document document, UUID userId, String ipAddress, String userAgent);
     
     /**
      * Apply security classification to a document.
@@ -76,7 +76,7 @@ public interface DocumentSecurityPort {
      * @param userId the user applying the classification
      * @return Mono containing the updated document
      */
-    Mono<Document> applySecurityClassification(UUID documentId, String classification, Long userId);
+    Mono<Document> applySecurityClassification(UUID documentId, String classification, UUID userId);
     
     /**
      * Check if a document is under legal hold.
@@ -94,7 +94,7 @@ public interface DocumentSecurityPort {
      * @param userId the user applying the hold
      * @return Mono containing the updated document
      */
-    Mono<Document> applyLegalHold(UUID documentId, String holdReason, Long userId);
+    Mono<Document> applyLegalHold(UUID documentId, String holdReason, UUID userId);
     
     /**
      * Remove legal hold from a document.
@@ -103,7 +103,7 @@ public interface DocumentSecurityPort {
      * @param userId the user removing the hold
      * @return Mono containing the updated document
      */
-    Mono<Document> removeLegalHold(UUID documentId, Long userId);
+    Mono<Document> removeLegalHold(UUID documentId, UUID userId);
     
     /**
      * Check if a document can be deleted based on security policies.
@@ -112,7 +112,7 @@ public interface DocumentSecurityPort {
      * @param userId the user attempting deletion
      * @return Mono containing true if deletion is allowed, false otherwise
      */
-    Mono<Boolean> canDeleteDocument(UUID documentId, Long userId);
+    Mono<Boolean> canDeleteDocument(UUID documentId, UUID userId);
     
     /**
      * Check if a document can be modified based on security policies.
@@ -121,7 +121,7 @@ public interface DocumentSecurityPort {
      * @param userId the user attempting modification
      * @return Mono containing true if modification is allowed, false otherwise
      */
-    Mono<Boolean> canModifyDocument(UUID documentId, Long userId);
+    Mono<Boolean> canModifyDocument(UUID documentId, UUID userId);
     
     /**
      * Get documents that are under legal hold.
@@ -155,7 +155,7 @@ public interface DocumentSecurityPort {
      * @param userId the user initiating quarantine
      * @return Mono containing the updated document
      */
-    Mono<Document> quarantineDocument(UUID documentId, String reason, Long userId);
+    Mono<Document> quarantineDocument(UUID documentId, String reason, UUID userId);
     
     /**
      * Release a document from quarantine.
@@ -164,5 +164,5 @@ public interface DocumentSecurityPort {
      * @param userId the user releasing from quarantine
      * @return Mono containing the updated document
      */
-    Mono<Document> releaseFromQuarantine(UUID documentId, Long userId);
+    Mono<Document> releaseFromQuarantine(UUID documentId, UUID userId);
 }

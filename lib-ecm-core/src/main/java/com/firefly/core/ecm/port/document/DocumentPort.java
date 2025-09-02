@@ -93,7 +93,7 @@ public interface DocumentPort {
      * Use {@link DocumentContentPort#getContent(UUID)} to retrieve the actual
      * document content separately.</p>
      *
-     * @param documentId the unique UUID identifier of the document
+     * @param documentId the unique Long identifier of the document
      * @return a Mono containing the document metadata if found, empty Mono if not found
      * @throws IllegalArgumentException if documentId is null
      * @see DocumentContentPort#getContent(UUID)
@@ -128,7 +128,7 @@ public interface DocumentPort {
      * <p>Implementations should verify that the document can be legally deleted
      * before proceeding with the deletion.</p>
      *
-     * @param documentId the unique UUID identifier of the document to delete
+     * @param documentId the unique Long identifier of the document to delete
      * @return a Mono that completes when the deletion is finished
      * @throws IllegalArgumentException if documentId is null
      * @throws DocumentNotFoundException if the document does not exist
@@ -143,7 +143,7 @@ public interface DocumentPort {
      * retrieving the full document metadata. Useful for validation and conditional
      * logic before performing other operations.</p>
      *
-     * @param documentId the unique UUID identifier of the document to check
+     * @param documentId the unique Long identifier of the document to check
      * @return a Mono containing true if the document exists, false otherwise
      * @throws IllegalArgumentException if documentId is null
      */
@@ -156,7 +156,7 @@ public interface DocumentPort {
      * folder. This does not include documents in subfolders unless the implementation
      * specifically supports recursive folder traversal.</p>
      *
-     * @param folderId the unique UUID identifier of the folder
+     * @param folderId the unique Long identifier of the folder
      * @return a Flux of documents contained in the folder, empty if folder is empty or doesn't exist
      * @throws IllegalArgumentException if folderId is null
      */
@@ -169,7 +169,7 @@ public interface DocumentPort {
      * This includes documents across all folders that the user owns, regardless
      * of their current location in the folder hierarchy.</p>
      *
-     * @param ownerId the UUID identifier of the document owner
+     * @param ownerId the Long identifier of the document owner
      * @return a Flux of documents owned by the specified user
      * @throws IllegalArgumentException if ownerId is null
      */
@@ -203,8 +203,8 @@ public interface DocumentPort {
      *   <li>The document is under policies that prevent movement</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document to move
-     * @param targetFolderId the unique UUID identifier of the destination folder
+     * @param documentId the unique Long identifier of the document to move
+     * @param targetFolderId the unique Long identifier of the destination folder
      * @return a Mono containing the updated document with new folder reference
      * @throws IllegalArgumentException if documentId or targetFolderId is null
      * @throws DocumentNotFoundException if the document doesn't exist
@@ -236,8 +236,8 @@ public interface DocumentPort {
      *   <li>Storage path (new location in backend storage)</li>
      * </ul>
      *
-     * @param documentId the unique UUID identifier of the document to copy
-     * @param targetFolderId the unique UUID identifier of the destination folder
+     * @param documentId the unique Long identifier of the document to copy
+     * @param targetFolderId the unique Long identifier of the destination folder
      * @param newName optional new name for the copied document; if null, uses original name
      * @return a Mono containing the newly created document copy
      * @throws IllegalArgumentException if documentId or targetFolderId is null

@@ -58,7 +58,7 @@ public class AuditEvent {
     /**
      * User who performed the action (Long)
      */
-    private final Long userId;
+    private final UUID userId;
     
     /**
      * User's session ID
