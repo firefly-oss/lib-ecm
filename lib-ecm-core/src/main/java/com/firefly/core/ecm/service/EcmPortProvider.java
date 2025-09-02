@@ -115,8 +115,13 @@ public class EcmPortProvider {
     public Optional<DocumentPort> getDocumentPort() {
         Optional<DocumentPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentPort.class);
         if (port.isEmpty()) {
-            log.warn("No DocumentPort adapter found for type: {}. Document management features will not be available.",
+            log.warn("No DocumentPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable document management features, configure a suitable adapter (e.g., s3, azure-blob) " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("DocumentPort adapter found: {}", port.get().getAdapterName());
         }
         return port;
     }
@@ -140,8 +145,13 @@ public class EcmPortProvider {
     public Optional<DocumentContentPort> getDocumentContentPort() {
         Optional<DocumentContentPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentContentPort.class);
         if (port.isEmpty()) {
-            log.warn("No DocumentContentPort adapter found for type: {}. Document content storage features will not be available.",
+            log.warn("No DocumentContentPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable document content storage features, configure a suitable adapter (e.g., s3, azure-blob) " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("DocumentContentPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
@@ -265,8 +275,13 @@ public class EcmPortProvider {
     public Optional<PermissionPort> getPermissionPort() {
         Optional<PermissionPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), PermissionPort.class);
         if (port.isEmpty()) {
-            log.warn("No PermissionPort adapter found for type: {}. Permission management features will not be available.",
+            log.warn("No PermissionPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable permission management features, configure a suitable adapter " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("PermissionPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
@@ -290,8 +305,13 @@ public class EcmPortProvider {
     public Optional<DocumentSecurityPort> getDocumentSecurityPort() {
         Optional<DocumentSecurityPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentSecurityPort.class);
         if (port.isEmpty()) {
-            log.warn("No DocumentSecurityPort adapter found for type: {}. Document security features will not be available.",
+            log.warn("No DocumentSecurityPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback with permissive defaults. " +
+                    "To enable document security features, configure a suitable adapter " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("DocumentSecurityPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
@@ -340,8 +360,13 @@ public class EcmPortProvider {
     public Optional<SignatureEnvelopePort> getSignatureEnvelopePort() {
         Optional<SignatureEnvelopePort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureEnvelopePort.class);
         if (port.isEmpty()) {
-            log.warn("No SignatureEnvelopePort adapter found for type: {}. eSignature envelope features will not be available.",
+            log.warn("No SignatureEnvelopePort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable eSignature envelope features, configure a suitable adapter (e.g., docusign, adobe-sign) " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("SignatureEnvelopePort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
@@ -441,8 +466,13 @@ public class EcmPortProvider {
     public Optional<DocumentExtractionPort> getDocumentExtractionPort() {
         Optional<DocumentExtractionPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentExtractionPort.class);
         if (port.isEmpty()) {
-            log.warn("No DocumentExtractionPort adapter found for type: {}. Document extraction features will not be available.",
+            log.warn("No DocumentExtractionPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable document extraction features, configure a suitable IDP adapter (e.g., aws-textract, azure-form-recognizer) " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("DocumentExtractionPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
@@ -467,8 +497,13 @@ public class EcmPortProvider {
     public Optional<DocumentClassificationPort> getDocumentClassificationPort() {
         Optional<DocumentClassificationPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentClassificationPort.class);
         if (port.isEmpty()) {
-            log.warn("No DocumentClassificationPort adapter found for type: {}. Document classification features will not be available.",
+            log.warn("No DocumentClassificationPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable document classification features, configure a suitable IDP adapter " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("DocumentClassificationPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
@@ -493,8 +528,13 @@ public class EcmPortProvider {
     public Optional<DocumentValidationPort> getDocumentValidationPort() {
         Optional<DocumentValidationPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentValidationPort.class);
         if (port.isEmpty()) {
-            log.warn("No DocumentValidationPort adapter found for type: {}. Document validation features will not be available.",
+            log.warn("No DocumentValidationPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable document validation features, configure a suitable IDP adapter " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("DocumentValidationPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
@@ -519,8 +559,13 @@ public class EcmPortProvider {
     public Optional<DataExtractionPort> getDataExtractionPort() {
         Optional<DataExtractionPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DataExtractionPort.class);
         if (port.isEmpty()) {
-            log.warn("No DataExtractionPort adapter found for type: {}. Structured data extraction features will not be available.",
+            log.warn("No DataExtractionPort adapter found for type: '{}'. " +
+                    "A no-op adapter will be used as fallback. " +
+                    "To enable structured data extraction features, configure a suitable IDP adapter " +
+                    "in your application properties under 'firefly.ecm.adapter-type'.",
                     ecmProperties.getAdapterType());
+        } else {
+            log.debug("DataExtractionPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }
