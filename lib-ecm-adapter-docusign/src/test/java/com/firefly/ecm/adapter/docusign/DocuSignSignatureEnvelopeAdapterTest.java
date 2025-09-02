@@ -157,7 +157,7 @@ class DocuSignSignatureEnvelopeAdapterTest {
     void sendEnvelope_ShouldSendEnvelopeSuccessfully() throws Exception {
         // Given
         adapter.getEnvelopeIdMapping().put(TEST_ENVELOPE_ID, TEST_DOCUSIGN_ENVELOPE_ID);
-        Long sentBy = Long.randomUUID();
+        UUID sentBy = UUID.randomUUID();
 
         EnvelopeUpdateSummary updateSummary = new EnvelopeUpdateSummary();
         updateSummary.setEnvelopeId(TEST_DOCUSIGN_ENVELOPE_ID);
@@ -187,7 +187,7 @@ class DocuSignSignatureEnvelopeAdapterTest {
     void voidEnvelope_ShouldVoidEnvelopeSuccessfully() throws Exception {
         // Given
         adapter.getEnvelopeIdMapping().put(TEST_ENVELOPE_ID, TEST_DOCUSIGN_ENVELOPE_ID);
-        Long voidedBy = Long.randomUUID();
+        UUID voidedBy = UUID.randomUUID();
         String voidReason = "Test void reason";
 
         when(envelopesApi.update(eq(TEST_ACCOUNT_ID), eq(TEST_DOCUSIGN_ENVELOPE_ID), any(Envelope.class)))
