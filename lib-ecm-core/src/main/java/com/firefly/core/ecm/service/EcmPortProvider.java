@@ -358,13 +358,14 @@ public class EcmPortProvider {
      * @see AdapterSelector#selectAdapter(String, Class)
      */
     public Optional<SignatureEnvelopePort> getSignatureEnvelopePort() {
-        Optional<SignatureEnvelopePort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureEnvelopePort.class);
+        String esignProvider = ecmProperties.getEsignature() != null ? ecmProperties.getEsignature().getProvider() : null;
+        Optional<SignatureEnvelopePort> port = adapterSelector.selectAdapter(esignProvider, SignatureEnvelopePort.class);
         if (port.isEmpty()) {
-            log.warn("No SignatureEnvelopePort adapter found for type: '{}'. " +
-                    "A no-op adapter will be used as fallback. " +
-                    "To enable eSignature envelope features, configure a suitable adapter (e.g., docusign, adobe-sign) " +
-                    "in your application properties under 'firefly.ecm.adapter-type'.",
-                    ecmProperties.getAdapterType());
+            // Fallback to core adapter-type, then to any available implementation
+            port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureEnvelopePort.class);
+        }
+        if (port.isEmpty()) {
+            log.warn("No SignatureEnvelopePort adapter found (provider='{}', adapterType='{}').", esignProvider, ecmProperties.getAdapterType());
         } else {
             log.debug("SignatureEnvelopePort adapter found: {}", port.get().getClass().getSimpleName());
         }
@@ -388,10 +389,13 @@ public class EcmPortProvider {
      * @see AdapterSelector#selectAdapter(String, Class)
      */
     public Optional<SignatureRequestPort> getSignatureRequestPort() {
-        Optional<SignatureRequestPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureRequestPort.class);
+        String esignProvider = ecmProperties.getEsignature() != null ? ecmProperties.getEsignature().getProvider() : null;
+        Optional<SignatureRequestPort> port = adapterSelector.selectAdapter(esignProvider, SignatureRequestPort.class);
         if (port.isEmpty()) {
-            log.warn("No SignatureRequestPort adapter found for type: {}. eSignature request features will not be available.",
-                    ecmProperties.getAdapterType());
+            port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureRequestPort.class);
+        }
+        if (port.isEmpty()) {
+            log.warn("No SignatureRequestPort adapter found (provider='{}', adapterType='{}').", esignProvider, ecmProperties.getAdapterType());
         }
         return port;
     }
@@ -413,10 +417,13 @@ public class EcmPortProvider {
      * @see AdapterSelector#selectAdapter(String, Class)
      */
     public Optional<SignatureValidationPort> getSignatureValidationPort() {
-        Optional<SignatureValidationPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureValidationPort.class);
+        String esignProvider = ecmProperties.getEsignature() != null ? ecmProperties.getEsignature().getProvider() : null;
+        Optional<SignatureValidationPort> port = adapterSelector.selectAdapter(esignProvider, SignatureValidationPort.class);
         if (port.isEmpty()) {
-            log.warn("No SignatureValidationPort adapter found for type: {}. Signature validation features will not be available.",
-                    ecmProperties.getAdapterType());
+            port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureValidationPort.class);
+        }
+        if (port.isEmpty()) {
+            log.warn("No SignatureValidationPort adapter found (provider='{}', adapterType='{}').", esignProvider, ecmProperties.getAdapterType());
         }
         return port;
     }
@@ -438,10 +445,13 @@ public class EcmPortProvider {
      * @see AdapterSelector#selectAdapter(String, Class)
      */
     public Optional<SignatureProofPort> getSignatureProofPort() {
-        Optional<SignatureProofPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureProofPort.class);
+        String esignProvider = ecmProperties.getEsignature() != null ? ecmProperties.getEsignature().getProvider() : null;
+        Optional<SignatureProofPort> port = adapterSelector.selectAdapter(esignProvider, SignatureProofPort.class);
         if (port.isEmpty()) {
-            log.warn("No SignatureProofPort adapter found for type: {}. Signature proof features will not be available.",
-                    ecmProperties.getAdapterType());
+            port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), SignatureProofPort.class);
+        }
+        if (port.isEmpty()) {
+            log.warn("No SignatureProofPort adapter found (provider='{}', adapterType='{}').", esignProvider, ecmProperties.getAdapterType());
         }
         return port;
     }

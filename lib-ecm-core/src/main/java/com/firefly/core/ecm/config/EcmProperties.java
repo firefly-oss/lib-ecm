@@ -159,6 +159,12 @@ public class EcmProperties {
     private Performance performance = new Performance();
     
     /**
+     * eSignature specific configuration.
+     * <p>Allows selecting a different provider for eSignature features than the core adapter-type.
+     */
+    private Esignature esignature = new Esignature();
+    
+    /**
      * Connection configuration settings for ECM adapter connections.
      *
      * <p>This class defines timeout values, connection pool limits, and retry
@@ -442,6 +448,18 @@ public class EcmProperties {
          * @defaultValue true
          */
         private Boolean compressionEnabled = true;
+    }
+    
+    /**
+     * eSignature configuration (provider and related properties).
+     */
+    @Data
+    public static class Esignature {
+        /**
+         * Specific provider for eSignature features (e.g. "docusign", "adobe-sign").
+         * If null/blank, the system will fall back to adapterType selection and/or any available implementation.
+         */
+        private String provider;
     }
     
     /**

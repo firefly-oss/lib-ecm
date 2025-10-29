@@ -23,10 +23,6 @@
 
     <modules>
         <module>lib-ecm-core</module>
-        <module>lib-ecm-adapter-s3</module>
-        <module>lib-ecm-adapter-docusign</module>
-        <module>lib-ecm-adapter-azure-blob</module>
-        <module>lib-ecm-adapter-adobe-sign</module>
     </modules>
 
     <properties>
