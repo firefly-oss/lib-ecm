@@ -13,13 +13,13 @@ A comprehensive, production-ready Enterprise Content Management (ECM) library bu
 The Firefly ECM Library solves the challenge of **vendor lock-in** and **integration complexity** in enterprise content management. Instead of being tied to a single ECM system or cloud provider, organizations can:
 
 - **Switch between storage providers** (S3 ✅, Azure Blob ✅, MinIO*, Alfresco*) without changing business logic
-- **Integrate multiple eSignature providers** (DocuSign ✅, Adobe Sign ✅) through a unified API
+- **Integrate multiple eSignature providers** (DocuSign ✅, Adobe Sign ✅, Logalty 🏗️) through a unified API
 - **Process documents intelligently** with IDP providers (AWS Textract*, Azure Form Recognizer*, Google Document AI*)
 - **Scale horizontally** with cloud-native, reactive architecture
 - **Maintain compliance** with built-in audit trails and security features
 - **Future-proof applications** with a stable, vendor-agnostic interface
 
-> **Legend:** ✅ = Fully implemented and tested | * = Planned for future release
+> **Legend:** ✅ = Fully implemented and tested | 🏗️ = Skeleton/placeholder implementation | * = Planned for future release
 
 ## 🏗️ Multi-Module Architecture
 
@@ -37,6 +37,11 @@ lib-ecm/                         # Parent POM
 ├── lib-ecm-adapter-docusign/    # DocuSign eSignature adapter implementation
 ├── lib-ecm-adapter-adobe-sign/  # Adobe Sign eSignature adapter implementation
 └── pom.xml                      # Parent POM with dependency management
+
+Standalone eSignature Adapters (separate repositories):
+├── lib-ecm-esignature-logalty/  # Logalty eSignature adapter (eIDAS-compliant)
+├── lib-ecm-esignature-adobe-sign/  # Standalone Adobe Sign adapter
+└── lib-ecm-esignature-docusign/    # Standalone DocuSign adapter
 ```
 
 ## 🚀 Current Implementation Status
@@ -79,6 +84,14 @@ lib-ecm/                         # Parent POM
 - ✅ **Advanced Features**: OAuth 2.0 authentication, embedded signing, signature validation
 - ✅ **Error Handling**: Comprehensive error handling with circuit breaker and retry patterns
 - ✅ **Comprehensive Javadoc**: Fully documented API with detailed method descriptions
+
+#### **Logalty eSignature Adapter**
+- 🏗️ **Skeleton Implementation**: SignatureEnvelopePort with placeholder methods
+- 🏗️ **eIDAS Compliance**: Configuration ready for qualified electronic signatures
+- 🏗️ **OAuth 2.0 Support**: Client credentials authentication framework
+- 🏗️ **Advanced Features**: Biometric signatures, SMS/video verification configuration
+- 🏗️ **Resilience Patterns**: Circuit breaker and retry mechanisms in place
+- 📝 **Note**: Full implementation pending Logalty API documentation and credentials
 
 ### 🔄 Architecture Highlights
 
@@ -151,6 +164,13 @@ Add the core module and desired adapter modules to your Spring Boot project:
     <artifactId>lib-ecm-adapter-docusign</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
+
+<!-- Logalty Adapter (optional) -->
+<dependency>
+    <groupId>com.firefly</groupId>
+    <artifactId>lib-ecm-esignature-logalty</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
 ```
 
 ### 2. Configure Adapters
@@ -194,6 +214,27 @@ firefly:
         user-id: ${DOCUSIGN_USER_ID}
         account-id: ${DOCUSIGN_ACCOUNT_ID}
         private-key: ${DOCUSIGN_PRIVATE_KEY}
+```
+
+#### Logalty Adapter Configuration
+
+```yaml
+# Enable Logalty adapter for eIDAS-compliant eSignatures
+firefly:
+  ecm:
+    esignature:
+      provider: logalty
+
+# Logalty adapter configuration
+firefly:
+  ecm:
+    adapter:
+      logalty:
+        client-id: ${LOGALTY_CLIENT_ID}
+        client-secret: ${LOGALTY_CLIENT_SECRET}
+        base-url: https://api.logalty.com
+        sandbox-mode: false
+        default-signature-type: ADVANCED
 ```
 
 ### 3. Use in Your Application
