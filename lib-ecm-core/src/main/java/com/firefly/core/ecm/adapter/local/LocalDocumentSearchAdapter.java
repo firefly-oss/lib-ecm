@@ -44,7 +44,7 @@ import java.util.stream.Stream;
         description = "Local in-memory DocumentSearchPort adapter",
         supportedFeatures = { AdapterFeature.SEARCH, AdapterFeature.METADATA_SEARCH }
 )
-@ConditionalOnProperty(name = "firefly.ecm.search.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "firefly.ecm.search.enabled", havingValue = "true", matchIfMissing = false)
 public class LocalDocumentSearchAdapter implements DocumentSearchPort {
 
     private final Map<UUID, Document> index = new ConcurrentHashMap<>();

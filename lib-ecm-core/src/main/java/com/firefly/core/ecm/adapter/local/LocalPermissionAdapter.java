@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
         description = "Local in-memory PermissionPort adapter",
         supportedFeatures = { AdapterFeature.PERMISSIONS }
 )
-@ConditionalOnProperty(name = "firefly.ecm.permissions.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "firefly.ecm.permissions.enabled", havingValue = "true", matchIfMissing = false)
 public class LocalPermissionAdapter implements PermissionPort {
 
     private final Map<UUID, Permission> store = new ConcurrentHashMap<>();
