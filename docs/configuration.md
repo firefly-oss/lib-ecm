@@ -1,233 +1,226 @@
 # Firefly ECM Configuration Guide
 
-This guide covers all configuration options available in the Firefly ECM Library.
+This guide covers configuration for the Firefly ECM Library and its adapter implementations.
 
-## Configuration Structure
+## Overview
 
-The Firefly ECM Library uses Spring Boot's configuration properties system with the prefix `firefly.ecm`.
+Configuration is split between:
 
-```yaml
-firefly:
-  ecm:
-    enabled: true
-    adapter-type: "s3"
-    properties: {}
-    connection: {}
-    features: {}
-    defaults: {}
-    performance: {}
+1. **Core Library Configuration** (lib-ecm): Basic ECM settings and adapter selection
+2. **Adapter Configuration**: Adapter-specific settings (provided by each adapter library)
+
+## Prerequisites
+
+Before configuring, ensure you have added the required dependencies:
+
+```xml
+<!-- Core library (required) -->
+<dependency>
+    <groupId>com.firefly</groupId>
+    <artifactId>lib-ecm</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+
+<!-- Add adapter libraries as needed -->
+<dependency>
+    <groupId>com.firefly</groupId>
+    <artifactId>lib-ecm-adapter-s3</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
 ```
 
-## Core Configuration
+## Core Configuration (lib-ecm)
+
+The core library uses Spring Boot's configuration properties system with the prefix `firefly.ecm`.
 
 ### Basic Settings
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `firefly.ecm.enabled` | Boolean | `true` | Enable/disable ECM functionality |
-| `firefly.ecm.adapter-type` | String | - | Adapter type to use (required) |
-| `firefly.ecm.properties` | Map | `{}` | Adapter-specific configuration |
+| `firefly.ecm.adapter-type` | String | - | Document storage adapter to use (e.g., "s3", "azure-blob") |
+| `firefly.ecm.esignature.provider` | String | - | eSignature provider to use (e.g., "docusign", "adobe-sign") |
 
-## Connection Configuration
-
-Configure connection settings for adapters:
+### Example Core Configuration
 
 ```yaml
 firefly:
   ecm:
-    connection:
-      connect-timeout: "PT30S"      # Connection timeout (ISO-8601 duration)
-      read-timeout: "PT5M"          # Read timeout (ISO-8601 duration)
-      max-connections: 100          # Maximum concurrent connections
-      retry-attempts: 3             # Number of retry attempts
+    enabled: true
+    adapter-type: s3           # Select S3 adapter for document storage
+    esignature:
+      provider: docusign       # Select DocuSign for eSignatures
 ```
 
-### Connection Properties
+## Adapter Configuration
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `connect-timeout` | Duration | `PT30S` | Connection timeout |
-| `read-timeout` | Duration | `PT5M` | Read timeout |
-| `max-connections` | Integer | `100` | Maximum concurrent connections |
-| `retry-attempts` | Integer | `3` | Number of retry attempts |
+Adapter-specific configuration is provided under `firefly.ecm.adapter.<adapter-name>`.
 
-## Feature Configuration
+### Amazon S3 Adapter Configuration
 
-Enable/disable specific ECM features:
+**Requires**: `lib-ecm-adapter-s3` dependency
 
 ```yaml
 firefly:
   ecm:
-    features:
-      document-management: true     # Basic document CRUD operations
-      content-storage: true         # Binary content storage
-      versioning: true              # Document versioning
-      folder-management: true       # Folder operations
-      folder-hierarchy: true        # Hierarchical folder structure
-      permissions: true             # Access control
-      security: true                # Security features
-      search: true                  # Document search
-      auditing: true                # Audit logging
-      esignature: false             # Digital signatures
-      virus-scanning: false         # Virus scanning
-      content-extraction: false     # Content extraction
+    adapter-type: s3
+    adapter:
+      s3:
+        bucket-name: my-documents-bucket    # Required: S3 bucket name
+        region: us-east-1                   # Required: AWS region
+        access-key: ${AWS_ACCESS_KEY_ID}    # Optional: AWS access key (uses default credentials if not set)
+        secret-key: ${AWS_SECRET_ACCESS_KEY} # Optional: AWS secret key
+        endpoint: https://s3.amazonaws.com  # Optional: Custom S3 endpoint (for S3-compatible services)
 ```
 
-### Feature Flags
+See [S3 Integration Guide](guides/s3-integration.md) for complete setup instructions.
 
-| Feature | Default | Description |
-|---------|---------|-------------|
-| `document-management` | `true` | Basic document CRUD operations |
-| `content-storage` | `true` | Binary content storage and retrieval |
-| `versioning` | `true` | Document version management |
-| `folder-management` | `true` | Folder creation and management |
-| `folder-hierarchy` | `true` | Hierarchical folder structures |
-| `permissions` | `true` | Access control and permissions |
-| `security` | `true` | Security features and encryption |
-| `search` | `true` | Document search capabilities |
-| `auditing` | `true` | Audit trail and logging |
-| `esignature` | `false` | Digital signature workflows |
-| `virus-scanning` | `false` | Virus scanning integration |
-| `content-extraction` | `false` | Text and metadata extraction |
+### Azure Blob Storage Adapter Configuration
 
-## Default Settings
-
-Configure default behavior and limits:
+**Requires**: `lib-ecm-adapter-azure-blob` dependency
 
 ```yaml
 firefly:
   ecm:
-    defaults:
-      max-file-size-mb: 100         # Maximum file size in MB
-      allowed-extensions:           # Allowed file extensions
-        - "pdf"
-        - "doc"
-        - "docx"
-        - "txt"
-        - "jpg"
-        - "png"
-      blocked-extensions:           # Blocked file extensions
-        - "exe"
-        - "bat"
-        - "cmd"
-        - "scr"
-      checksum-algorithm: "SHA-256" # Checksum algorithm
-      default-folder: "/"           # Default folder path
+    adapter-type: azure-blob
+    adapter:
+      azure-blob:
+        account-name: mystorageaccount      # Required: Azure storage account name
+        container-name: documents           # Required: Blob container name
+        account-key: ${AZURE_STORAGE_KEY}   # Optional: Account key (uses managed identity if not set)
+        connection-string: ${AZURE_STORAGE_CONNECTION_STRING}  # Optional: Full connection string
 ```
 
-### Default Properties
+See [Azure Blob Integration Guide](guides/azure-integration.md) for complete setup instructions.
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `max-file-size-mb` | Long | `100` | Maximum file size in MB |
-| `allowed-extensions` | List<String> | `["pdf", "doc", "docx", "txt", "jpg", "png"]` | Allowed file extensions |
-| `blocked-extensions` | List<String> | `["exe", "bat", "cmd", "scr"]` | Blocked file extensions |
-| `checksum-algorithm` | String | `"SHA-256"` | Checksum algorithm |
-| `default-folder` | String | `"/"` | Default folder path |
+### DocuSign Adapter Configuration
 
-## Performance Configuration
-
-Optimize performance settings:
+**Requires**: `lib-ecm-adapter-docusign` dependency
 
 ```yaml
 firefly:
   ecm:
-    performance:
-      batch-size: 100               # Batch operation size
-      cache-enabled: true           # Enable caching
-      cache-expiration: "PT30M"     # Cache expiration time
-      compression-enabled: true     # Enable compression
+    esignature:
+      provider: docusign
+    adapter:
+      docusign:
+        integration-key: ${DOCUSIGN_INTEGRATION_KEY}  # Required: DocuSign integration key
+        user-id: ${DOCUSIGN_USER_ID}                  # Required: DocuSign user ID
+        account-id: ${DOCUSIGN_ACCOUNT_ID}            # Required: DocuSign account ID
+        private-key: ${DOCUSIGN_PRIVATE_KEY}          # Required: RSA private key for JWT
+        base-url: https://demo.docusign.net           # Optional: DocuSign API base URL
 ```
 
-### Performance Properties
+See [DocuSign Integration Guide](guides/docusign-integration.md) for complete setup instructions.
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `batch-size` | Integer | `100` | Batch operation size |
-| `cache-enabled` | Boolean | `true` | Enable caching |
-| `cache-expiration` | Duration | `PT30M` | Cache expiration time |
-| `compression-enabled` | Boolean | `true` | Enable compression |
+### Adobe Sign Adapter Configuration
 
-## Adapter-Specific Configuration
-
-### Amazon S3 Adapter
+**Requires**: `lib-ecm-adapter-adobe-sign` dependency
 
 ```yaml
 firefly:
   ecm:
-    adapter-type: "s3"
-    properties:
-      bucket-name: "my-documents"   # S3 bucket name (required)
-      region: "us-east-1"           # AWS region (required)
-      access-key: "${AWS_ACCESS_KEY}" # AWS access key
-      secret-key: "${AWS_SECRET_KEY}" # AWS secret key
-      endpoint: ""                  # Custom endpoint for S3-compatible services
-      path-prefix: "documents/"     # Path prefix for all documents
-      encryption: "AES256"          # Server-side encryption
-      storage-class: "STANDARD"     # S3 storage class
+    esignature:
+      provider: adobe-sign
+    adapter:
+      adobe-sign:
+        client-id: ${ADOBE_SIGN_CLIENT_ID}            # Required: Adobe Sign client ID
+        client-secret: ${ADOBE_SIGN_CLIENT_SECRET}    # Required: Adobe Sign client secret
+        base-url: https://api.na1.adobesign.com       # Optional: Adobe Sign API base URL
 ```
+## Complete Configuration Examples
 
-#### S3 Required Properties
-- `bucket-name`: S3 bucket name
-- `region`: AWS region
-
-#### S3 Optional Properties
-- `access-key`: AWS access key (use IAM roles in production)
-- `secret-key`: AWS secret key (use IAM roles in production)
-- `endpoint`: Custom endpoint for S3-compatible services
-- `path-prefix`: Path prefix for document organization
-- `encryption`: Server-side encryption (AES256, aws:kms)
-- `storage-class`: S3 storage class (STANDARD, STANDARD_IA, GLACIER)
-
-### Alfresco Adapter
+### Example 1: S3 Document Storage Only
 
 ```yaml
 firefly:
   ecm:
-    adapter-type: "alfresco"
-    properties:
-      server-url: "http://localhost:8080/alfresco"  # Alfresco server URL (required)
-      api-url: "http://localhost:8080/alfresco/api/-default-/public/alfresco/versions/1"  # API URL
-      username: "admin"             # Username (required)
-      password: "${ALFRESCO_PASSWORD}" # Password (required)
-      repository-id: "-default-"    # Repository ID
-      root-folder-path: "/Company Home" # Root folder path
-      use-cmis: true                # Use CMIS protocol
-      enable-versioning: true       # Enable versioning
-      enable-aspects: true          # Enable aspects
+    enabled: true
+    adapter-type: s3
+    adapter:
+      s3:
+        bucket-name: my-documents
+        region: us-east-1
+        access-key: ${AWS_ACCESS_KEY_ID}
+        secret-key: ${AWS_SECRET_ACCESS_KEY}
 ```
 
-#### Alfresco Required Properties
-- `server-url`: Alfresco server URL
-- `username`: Alfresco username
-- `password`: Alfresco password
+### Example 2: Azure Blob + DocuSign
 
-#### Alfresco Optional Properties
-- `api-url`: REST API URL
-- `repository-id`: Repository identifier
-- `root-folder-path`: Root folder path
-- `use-cmis`: Enable CMIS protocol
-- `enable-versioning`: Enable document versioning
-- `enable-aspects`: Enable Alfresco aspects
+```yaml
+firefly:
+  ecm:
+    enabled: true
+    adapter-type: azure-blob
+    esignature:
+      provider: docusign
+    adapter:
+      azure-blob:
+        account-name: mystorageaccount
+        container-name: documents
+        account-key: ${AZURE_STORAGE_KEY}
+      docusign:
+        integration-key: ${DOCUSIGN_INTEGRATION_KEY}
+        user-id: ${DOCUSIGN_USER_ID}
+        account-id: ${DOCUSIGN_ACCOUNT_ID}
+        private-key: ${DOCUSIGN_PRIVATE_KEY}
+```
+
+### Example 3: S3 + Adobe Sign
+
+```yaml
+firefly:
+  ecm:
+    enabled: true
+    adapter-type: s3
+    esignature:
+      provider: adobe-sign
+    adapter:
+      s3:
+        bucket-name: my-documents
+        region: us-west-2
+      adobe-sign:
+        client-id: ${ADOBE_SIGN_CLIENT_ID}
+        client-secret: ${ADOBE_SIGN_CLIENT_SECRET}
+```
+## Graceful Degradation
+
+If no adapter is configured or available, the library will:
+
+1. **Log a warning** at startup indicating no adapter was found
+2. **Use no-op adapters** that return empty results or throw `UnsupportedOperationException`
+3. **Allow the application to start** without failing
+
+This allows you to include the library without being forced to configure an adapter immediately.
+
+```
+WARN: No adapter found for type 'document'. Using no-op adapter.
+WARN: No adapter found for type 'esignature'. Using no-op adapter.
+```
 
 ## Environment Variables
 
 Use environment variables for sensitive configuration:
 
 ```bash
-# AWS Configuration
+# AWS Configuration (for S3 adapter)
 export AWS_ACCESS_KEY_ID=your-access-key
 export AWS_SECRET_ACCESS_KEY=your-secret-key
 export AWS_DEFAULT_REGION=us-east-1
 
-# Alfresco Configuration
-export ALFRESCO_USERNAME=admin
-export ALFRESCO_PASSWORD=admin
+# Azure Configuration (for Azure Blob adapter)
+export AZURE_STORAGE_ACCOUNT=mystorageaccount
+export AZURE_STORAGE_KEY=your-storage-key
 
-# DocuSign Configuration (if eSignature enabled)
+# DocuSign Configuration (for DocuSign adapter)
 export DOCUSIGN_INTEGRATION_KEY=your-integration-key
 export DOCUSIGN_USER_ID=your-user-id
 export DOCUSIGN_ACCOUNT_ID=your-account-id
+export DOCUSIGN_PRIVATE_KEY=your-private-key
+
+# Adobe Sign Configuration (for Adobe Sign adapter)
+export ADOBE_SIGN_CLIENT_ID=your-client-id
+export ADOBE_SIGN_CLIENT_SECRET=your-client-secret
 ```
 
 ## Configuration Profiles
@@ -239,13 +232,12 @@ Use Spring profiles for different environments:
 ```yaml
 firefly:
   ecm:
-    adapter-type: "s3"
-    properties:
-      bucket-name: "dev-documents"
-      region: "us-east-1"
-    features:
-      auditing: false
-      virus-scanning: false
+    enabled: true
+    adapter-type: s3
+    adapter:
+      s3:
+        bucket-name: dev-documents
+        region: us-east-1
 
 logging:
   level:
@@ -257,18 +249,19 @@ logging:
 ```yaml
 firefly:
   ecm:
-    adapter-type: "s3"
-    properties:
-      bucket-name: "prod-documents"
-      region: "us-east-1"
-      encryption: "AES256"
-      storage-class: "STANDARD"
-    features:
-      auditing: true
-      virus-scanning: true
-    performance:
-      cache-enabled: true
-      compression-enabled: true
+    enabled: true
+    adapter-type: s3
+    esignature:
+      provider: docusign
+    adapter:
+      s3:
+        bucket-name: prod-documents
+        region: us-east-1
+      docusign:
+        integration-key: ${DOCUSIGN_INTEGRATION_KEY}
+        user-id: ${DOCUSIGN_USER_ID}
+        account-id: ${DOCUSIGN_ACCOUNT_ID}
+        private-key: ${DOCUSIGN_PRIVATE_KEY}
 
 logging:
   level:
@@ -277,31 +270,43 @@ logging:
 
 ## Configuration Validation
 
-The library validates configuration on startup:
+Each adapter library validates its own configuration on startup:
 
-- Required properties for selected adapter
-- Feature compatibility with adapter
+- Required properties for the adapter
 - Connection settings validity
-- Performance settings ranges
+- Credential format and availability
 
-### Common Validation Errors
+### Common Configuration Issues
 
-| Error | Cause | Solution |
+| Issue | Cause | Solution |
 |-------|-------|----------|
+| `No adapter found` | Adapter library not in classpath | Add adapter dependency to pom.xml |
 | `Adapter type not specified` | Missing `adapter-type` | Set `firefly.ecm.adapter-type` |
-| `Required property missing` | Missing adapter property | Check adapter documentation |
-| `Invalid timeout value` | Invalid duration format | Use ISO-8601 format (PT30S) |
-| `Unsupported feature` | Feature not supported by adapter | Disable feature or change adapter |
+| `Required property missing` | Missing adapter property | Check adapter integration guide |
+| `Authentication failed` | Invalid credentials | Verify environment variables |
 
-## Configuration Examples
+## Troubleshooting
 
-Complete configuration examples are available in:
-- [`application-ecm-example.yml`](../src/main/resources/application-ecm-example.yml)
-- [Integration guides](guides/)
+### No Adapter Found Warning
+
+If you see warnings like:
+```
+WARN: No adapter found for type 'document'. Using no-op adapter.
+```
+
+**Causes:**
+1. Adapter library not added to dependencies
+2. `adapter-type` doesn't match any registered adapter
+3. Adapter auto-configuration conditions not met
+
+**Solutions:**
+1. Add the adapter dependency to your `pom.xml`
+2. Verify `firefly.ecm.adapter-type` matches the adapter name
+3. Check adapter-specific configuration requirements
 
 ## Next Steps
 
-- [S3 Integration Guide](guides/s3-integration.md)
-- [Alfresco Integration Guide](guides/alfresco-integration.md)
-- [DocuSign Integration Guide](guides/docusign-integration.md)
-- [API Reference](api/)
+- [S3 Integration Guide](guides/s3-integration.md) - Complete S3 adapter setup
+- [Azure Blob Integration Guide](guides/azure-integration.md) - Complete Azure Blob adapter setup
+- [DocuSign Integration Guide](guides/docusign-integration.md) - Complete DocuSign adapter setup
+- [Architecture Guide](architecture.md) - Understanding the hexagonal architecture

@@ -1,16 +1,26 @@
 # Configuration Reference
 
-This document provides a comprehensive reference for all configuration properties available in the Firefly ECM Library and its adapter modules.
+This document provides a comprehensive reference for all configuration properties available in the Firefly ECM Library and its adapter implementations.
+
+## Important Note
+
+This reference covers configuration for:
+- **Core Library** (lib-ecm): Port interfaces and infrastructure
+- **Adapter Libraries** (separate repositories): Concrete implementations
+
+**To use adapter configurations, you must first add the adapter library as a dependency.**
 
 ## Table of Contents
 
 - [Core Configuration](#core-configuration)
 - [S3 Adapter Configuration](#s3-adapter-configuration)
+- [Azure Blob Adapter Configuration](#azure-blob-adapter-configuration)
 - [DocuSign Adapter Configuration](#docusign-adapter-configuration)
+- [Adobe Sign Adapter Configuration](#adobe-sign-adapter-configuration)
 - [Environment Variables](#environment-variables)
 - [Configuration Examples](#configuration-examples)
 
-## Core Configuration
+## Core Configuration (lib-ecm)
 
 ### Basic ECM Configuration
 
@@ -27,13 +37,29 @@ firefly:
   ecm:
     # Document storage adapter
     adapter-type: s3
-    
+
     # eSignature provider
     esignature:
       provider: docusign
 ```
 
+---
+
+## Adapter Configurations
+
+The following configurations require their respective adapter libraries to be added as dependencies.
+
 ## S3 Adapter Configuration
+
+**Requires dependency**: `lib-ecm-adapter-s3`
+
+```xml
+<dependency>
+    <groupId>com.firefly</groupId>
+    <artifactId>lib-ecm-adapter-s3</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
 
 ### Required Properties
 
@@ -73,7 +99,44 @@ Supported storage classes:
 - `DEEP_ARCHIVE` - Glacier Deep Archive
 - `INTELLIGENT_TIERING` - Intelligent Tiering
 
+## Azure Blob Storage Adapter Configuration
+
+**Requires dependency**: `lib-ecm-adapter-azure-blob`
+
+```xml
+<dependency>
+    <groupId>com.firefly</groupId>
+    <artifactId>lib-ecm-adapter-azure-blob</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+### Required Properties
+
+| Property | Type | Description | Environment Variable |
+|----------|------|-------------|---------------------|
+| `firefly.ecm.adapter.azure-blob.account-name` | String | Azure storage account name | `FIREFLY_ECM_ADAPTER_AZURE_BLOB_ACCOUNT_NAME` |
+| `firefly.ecm.adapter.azure-blob.container-name` | String | Blob container name | `FIREFLY_ECM_ADAPTER_AZURE_BLOB_CONTAINER_NAME` |
+
+### Optional Properties
+
+| Property | Type | Default | Description | Environment Variable |
+|----------|------|---------|-------------|---------------------|
+| `firefly.ecm.adapter.azure-blob.account-key` | String | - | Storage account key | `FIREFLY_ECM_ADAPTER_AZURE_BLOB_ACCOUNT_KEY` |
+| `firefly.ecm.adapter.azure-blob.connection-string` | String | - | Full connection string | `FIREFLY_ECM_ADAPTER_AZURE_BLOB_CONNECTION_STRING` |
+| `firefly.ecm.adapter.azure-blob.endpoint` | String | - | Custom blob endpoint | `FIREFLY_ECM_ADAPTER_AZURE_BLOB_ENDPOINT` |
+
 ## DocuSign Adapter Configuration
+
+**Requires dependency**: `lib-ecm-adapter-docusign`
+
+```xml
+<dependency>
+    <groupId>com.firefly</groupId>
+    <artifactId>lib-ecm-adapter-docusign</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
 
 ### Required Properties
 
@@ -91,27 +154,31 @@ Supported storage classes:
 | `firefly.ecm.adapter.docusign.base-url` | String | `https://na3.docusign.net/restapi` | DocuSign API base URL | `FIREFLY_ECM_ADAPTER_DOCUSIGN_BASE_URL` |
 | `firefly.ecm.adapter.docusign.auth-server` | String | `https://account.docusign.com` | Auth server URL | `FIREFLY_ECM_ADAPTER_DOCUSIGN_AUTH_SERVER` |
 | `firefly.ecm.adapter.docusign.sandbox-mode` | Boolean | `false` | Enable sandbox mode | `FIREFLY_ECM_ADAPTER_DOCUSIGN_SANDBOX_MODE` |
-| `firefly.ecm.adapter.docusign.webhook-url` | String | - | Webhook URL | `FIREFLY_ECM_ADAPTER_DOCUSIGN_WEBHOOK_URL` |
-| `firefly.ecm.adapter.docusign.webhook-secret` | String | - | Webhook secret | `FIREFLY_ECM_ADAPTER_DOCUSIGN_WEBHOOK_SECRET` |
-| `firefly.ecm.adapter.docusign.connection-timeout` | Duration | `PT30S` | Connection timeout | `FIREFLY_ECM_ADAPTER_DOCUSIGN_CONNECTION_TIMEOUT` |
-| `firefly.ecm.adapter.docusign.read-timeout` | Duration | `PT60S` | Read timeout | `FIREFLY_ECM_ADAPTER_DOCUSIGN_READ_TIMEOUT` |
-| `firefly.ecm.adapter.docusign.max-retries` | Integer | `3` | Max retry attempts | `FIREFLY_ECM_ADAPTER_DOCUSIGN_MAX_RETRIES` |
-| `firefly.ecm.adapter.docusign.jwt-expiration` | Long | `3600` | JWT expiration (seconds) | `FIREFLY_ECM_ADAPTER_DOCUSIGN_JWT_EXPIRATION` |
-| `firefly.ecm.adapter.docusign.enable-polling` | Boolean | `true` | Enable status polling | `FIREFLY_ECM_ADAPTER_DOCUSIGN_ENABLE_POLLING` |
-| `firefly.ecm.adapter.docusign.polling-interval` | Duration | `PT5M` | Polling interval | `FIREFLY_ECM_ADAPTER_DOCUSIGN_POLLING_INTERVAL` |
-| `firefly.ecm.adapter.docusign.default-email-subject` | String | `Please sign this document` | Default email subject | `FIREFLY_ECM_ADAPTER_DOCUSIGN_DEFAULT_EMAIL_SUBJECT` |
-| `firefly.ecm.adapter.docusign.default-email-message` | String | `Please review and sign the attached document(s).` | Default email message | `FIREFLY_ECM_ADAPTER_DOCUSIGN_DEFAULT_EMAIL_MESSAGE` |
-| `firefly.ecm.adapter.docusign.enable-embedded-signing` | Boolean | `false` | Enable embedded signing | `FIREFLY_ECM_ADAPTER_DOCUSIGN_ENABLE_EMBEDDED_SIGNING` |
-| `firefly.ecm.adapter.docusign.return-url` | String | - | Return URL for embedded signing | `FIREFLY_ECM_ADAPTER_DOCUSIGN_RETURN_URL` |
-| `firefly.ecm.adapter.docusign.enable-retention` | Boolean | `true` | Enable document retention | `FIREFLY_ECM_ADAPTER_DOCUSIGN_ENABLE_RETENTION` |
-| `firefly.ecm.adapter.docusign.retention-days` | Integer | `2555` | Retention period (days) | `FIREFLY_ECM_ADAPTER_DOCUSIGN_RETENTION_DAYS` |
 
-### Dependencies
+## Adobe Sign Adapter Configuration
 
-The DocuSign adapter automatically includes all required dependencies:
+**Requires dependency**: `lib-ecm-adapter-adobe-sign`
 
-- **DocuSign eSign Java SDK** (`docusign-esign-java:4.3.0`)
-- **JAX-RS API** (`jakarta.ws.rs-api:3.1.0`) - For REST client compatibility
+```xml
+<dependency>
+    <groupId>com.firefly</groupId>
+    <artifactId>lib-ecm-adapter-adobe-sign</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+
+### Required Properties
+
+| Property | Type | Description | Environment Variable |
+|----------|------|-------------|---------------------|
+| `firefly.ecm.adapter.adobe-sign.client-id` | String | Adobe Sign client ID | `FIREFLY_ECM_ADAPTER_ADOBE_SIGN_CLIENT_ID` |
+| `firefly.ecm.adapter.adobe-sign.client-secret` | String | Adobe Sign client secret | `FIREFLY_ECM_ADAPTER_ADOBE_SIGN_CLIENT_SECRET` |
+
+### Optional Properties
+
+| Property | Type | Default | Description | Environment Variable |
+|----------|------|---------|-------------|---------------------|
+| `firefly.ecm.adapter.adobe-sign.base-url` | String | `https://api.na1.adobesign.com` | Adobe Sign API base URL | `FIREFLY_ECM_ADAPTER_ADOBE_SIGN_BASE_URL` |
 - **Jersey Client** (`jersey-client:3.1.3`) - HTTP client implementation
 - **Jersey Media JSON** (`jersey-media-json-jackson:3.1.3`) - JSON processing
 - **Jersey HK2** (`jersey-hk2:3.1.3`) - Dependency injection

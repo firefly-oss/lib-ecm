@@ -4,54 +4,113 @@ This guide explains the architecture and design principles of the Firefly ECM Li
 
 ## Overview
 
-The Firefly ECM Library implements **Hexagonal Architecture** (also known as Ports and Adapters pattern) to provide a clean separation between business logic and external systems. This architecture enables:
+The Firefly ECM Library implements **Hexagonal Architecture** (also known as Ports and Adapters pattern) with a clear separation between:
+
+1. **Port Interface Library** (this library): Defines business contracts and domain models
+2. **Adapter Implementation Libraries** (separate repositories): Provide concrete implementations for specific technologies
+
+This architecture enables:
 
 - **Vendor Independence**: Switch between storage providers without changing business logic
 - **Testability**: Mock external dependencies for unit testing
 - **Maintainability**: Clear separation of concerns
-- **Extensibility**: Add new adapters without modifying existing code
+- **Extensibility**: Add new adapters without modifying the core library
+- **Modularity**: Include only the adapters you need
 
 ## Architecture Diagram
 
 ```
-┌───────────────────────────────────────────────────────────┐
-│                    APPLICATION CORE                       │
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │                DOMAIN MODELS                        │  │
-│  │  • Document      • Folder        • Permission       │  │
-│  │  • AuditEvent    • SignatureEnvelope                │  │
-│  │  • DocumentVersion • FolderPermission               │  │
-│  └─────────────────────────────────────────────────────┘  │
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │                    PORTS                            │  │
-│  │  • DocumentPort           • PermissionPort          │  │
-│  │  • DocumentContentPort    • AuditPort               │  │
-│  │  • SignatureEnvelopePort  • FolderPort              │  │
-│  │  • DocumentVersionPort    • SearchPort              │  │
-│  └─────────────────────────────────────────────────────┘  │
-│  ┌─────────────────────────────────────────────────────┐  │
-│  │                   SERVICES                          │  │
-│  │  • EcmPortProvider        • AdapterSelector         │  │
-│  │  • AdapterRegistry        • ConfigurationValidator  │  │
-│  └─────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    YOUR APPLICATION                             │
+│                                                                 │
+│  Uses port interfaces to interact with ECM functionality       │
+└─────────────────────────────────────────────────────────────────┘
                               │
-                              │ Dependency Inversion
+                              │ Depends on
                               ▼
-┌───────────────────────────────────────────────────────────┐
-│                       ADAPTERS                            │
-│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐  │
-│  │   AWS S3    │     │   DocuSign  │     │  Alfresco   │  │
-│  │   Adapter   │     │   Adapter   │     │   Adapter   │  │
-│  └─────────────┘     └─────────────┘     └─────────────┘  │
-│  ┌─────────────┐     ┌─────────────┐     ┌─────────────┐  │
-│  │ Azure Blob  │     │ Adobe Sign  │     │    MinIO    │  │
-│  │   Adapter   │     │   Adapter   │     │   Adapter   │  │
-│  └─────────────┘     └─────────────┘     └─────────────┘  │
-└───────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│              LIB-ECM (Port Interface Library)                   │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                    DOMAIN MODELS                          │  │
+│  │  • Document      • Folder        • Permission             │  │
+│  │  • AuditEvent    • SignatureEnvelope                      │  │
+│  │  • DocumentVersion • FolderPermission                     │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │                    PORT INTERFACES                        │  │
+│  │  • DocumentPort           • PermissionPort                │  │
+│  │  • DocumentContentPort    • AuditPort                     │  │
+│  │  • SignatureEnvelopePort  • FolderPort                    │  │
+│  │  • DocumentVersionPort    • SearchPort                    │  │
+│  │  • DataExtractionPort     • DocumentClassificationPort    │  │
+│  └───────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │              ADAPTER INFRASTRUCTURE                       │  │
+│  │  • EcmPortProvider        • AdapterSelector               │  │
+│  │  • AdapterRegistry        • Auto-Configuration            │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ Implemented by (separate libraries)
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    ADAPTER LIBRARIES                            │
+│                    (Separate Repositories)                      │
+│                                                                 │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐  │
+│  │ lib-ecm-adapter- │  │ lib-ecm-adapter- │  │ lib-ecm-     │  │
+│  │       s3         │  │   docusign       │  │ adapter-     │  │
+│  │                  │  │                  │  │ azure-blob   │  │
+│  │ Implements:      │  │ Implements:      │  │              │  │
+│  │ • DocumentPort   │  │ • SignatureEnv.. │  │ Implements:  │  │
+│  │ • ContentPort    │  │ • SignatureReq.. │  │ • DocumentP..│  │
+│  └──────────────────┘  └──────────────────┘  └──────────────┘  │
+│                                                                 │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐  │
+│  │ lib-ecm-adapter- │  │ lib-ecm-adapter- │  │ lib-ecm-     │  │
+│  │   adobe-sign     │  │   alfresco       │  │ adapter-     │  │
+│  │                  │  │                  │  │ aws-textract │  │
+│  │ (Planned)        │  │ (Planned)        │  │ (Planned)    │  │
+│  └──────────────────┘  └──────────────────┘  └──────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## Core Components
+## Core Concepts
+
+### Hexagonal Architecture with Library Separation
+
+The Firefly ECM implementation separates hexagonal architecture across multiple libraries:
+
+#### 1. Port Interface Library (lib-ecm)
+
+This library contains:
+
+- **Domain Layer**: Business entities and rules (Document, Folder, SignatureEnvelope, etc.)
+- **Port Layer**: Interface contracts for external interactions
+- **Adapter Infrastructure**: Framework for discovering and selecting adapters
+
+**Key characteristics:**
+- No concrete adapter implementations (except no-op fallbacks)
+- No dependencies on external provider SDKs (AWS, Azure, DocuSign, etc.)
+- Provides graceful degradation with no-op adapters
+- Stable API that rarely changes
+
+#### 2. Adapter Implementation Libraries (separate repositories)
+
+Each adapter library:
+
+- **Depends on lib-ecm** for port interfaces and domain models
+- **Implements specific port interfaces** for a particular technology
+- **Includes provider SDK dependencies** (e.g., AWS SDK, DocuSign SDK)
+- **Registers itself** via Spring Boot auto-configuration
+
+**Key characteristics:**
+- Can be updated independently of the core library
+- Applications choose which adapters to include
+- Multiple adapters can coexist (e.g., S3 + DocuSign)
+- Adapter-specific configuration properties
+
+## Core Components in lib-ecm
 
 ### Domain Models
 
@@ -85,42 +144,80 @@ Located in `com.firefly.core.ecm.port`, these define the business interfaces:
 #### Folder Ports
 - **FolderPort**: Folder management
 - **FolderHierarchyPort**: Hierarchical operations
-- **FolderPermissionPort**: Folder permissions
 
 #### Security Ports
 - **PermissionPort**: Access control
-- **SecurityPort**: Security operations
+- **DocumentSecurityPort**: Document security operations
 
 #### Audit Ports
 - **AuditPort**: Audit logging
-- **CompliancePort**: Compliance operations
 
 #### eSignature Ports
 - **SignatureEnvelopePort**: Envelope management
 - **SignatureRequestPort**: Signature requests
 - **SignatureValidationPort**: Signature validation
+- **SignatureProofPort**: Signature proof and evidence
 
-### Adapters
+#### IDP (Intelligent Document Processing) Ports
+- **DocumentExtractionPort**: OCR and text extraction
+- **DocumentClassificationPort**: Document type classification
+- **DataExtractionPort**: Structured data extraction
+- **DocumentValidationPort**: Document validation
 
-Located in `com.firefly.core.ecm.adapter`, these implement the ports for specific technologies:
+### Adapter Infrastructure
 
-#### Storage Adapters
-- **S3Adapter**: Amazon S3 implementation ✅ **Available**
-- **AlfrescoAdapter**: Alfresco Content Services (planned)
-- **AzureBlobAdapter**: Azure Blob Storage (planned)
-- **MinIOAdapter**: MinIO Object Storage (planned)
+Located in `com.firefly.core.ecm.adapter`, this provides the framework for adapter discovery and selection:
 
-#### eSignature Adapters
-- **DocuSignAdapter**: DocuSign integration ✅ **Available**
-- **AdobeSignAdapter**: Adobe Sign integration (planned)
+- **AdapterRegistry**: Maintains registry of available adapters
+- **AdapterSelector**: Selects appropriate adapter based on configuration
+- **EcmAdapter**: Base interface for all adapters
+- **AdapterInfo**: Metadata about adapter capabilities
+- **AdapterProfile**: Adapter configuration profiles
 
-## Adapter System
+## Adapter Implementation Libraries (Separate Repositories)
 
-### Adapter Registration
+Adapter implementations are provided in separate libraries that depend on lib-ecm:
 
-Adapters are automatically discovered and registered using Spring's component scanning:
+### Document Storage Adapters
+
+| Adapter | Library | Status | Implements |
+|---------|---------|--------|------------|
+| **Amazon S3** | `lib-ecm-adapter-s3` | ✅ Available | DocumentPort, DocumentContentPort |
+| **Azure Blob** | `lib-ecm-adapter-azure-blob` | ✅ Available | DocumentPort, DocumentContentPort |
+| **MinIO** | `lib-ecm-adapter-minio` | 🔜 Planned | DocumentPort, DocumentContentPort |
+| **Alfresco** | `lib-ecm-adapter-alfresco` | 🔜 Planned | DocumentPort, FolderPort, PermissionPort |
+
+### eSignature Adapters
+
+| Adapter | Library | Status | Implements |
+|---------|---------|--------|------------|
+| **DocuSign** | `lib-ecm-adapter-docusign` | ✅ Available | SignatureEnvelopePort, SignatureRequestPort |
+| **Adobe Sign** | `lib-ecm-adapter-adobe-sign` | ✅ Available | SignatureEnvelopePort, SignatureValidationPort |
+| **Logalty** | `lib-ecm-adapter-logalty` | 🔜 Planned | SignatureEnvelopePort (eIDAS-compliant) |
+
+### IDP Adapters
+
+| Adapter | Library | Status | Implements |
+|---------|---------|--------|------------|
+| **AWS Textract** | `lib-ecm-adapter-aws-textract` | 🔜 Planned | DocumentExtractionPort, DataExtractionPort |
+| **Azure Form Recognizer** | `lib-ecm-adapter-azure-form-recognizer` | 🔜 Planned | DocumentExtractionPort, DataExtractionPort |
+| **Google Document AI** | `lib-ecm-adapter-google-document-ai` | 🔜 Planned | DocumentExtractionPort, DataExtractionPort |
+
+## How Adapters Work
+
+### Adapter Discovery and Registration
+
+When you add an adapter library to your application:
+
+1. **Dependency Resolution**: Maven/Gradle includes the adapter JAR in your classpath
+2. **Auto-Configuration**: Spring Boot discovers the adapter's auto-configuration class
+3. **Bean Registration**: The adapter registers its implementation beans
+4. **Adapter Registry**: The adapter registers itself with the `AdapterRegistry`
+
+Example from an adapter library (e.g., `lib-ecm-adapter-s3`):
 
 ```java
+// In the adapter library (separate repository)
 @EcmAdapter(
     type = "s3",
     description = "Amazon S3 Document Storage Adapter",
@@ -135,19 +232,37 @@ Adapters are automatically discovered and registered using Spring's component sc
 )
 @Component
 @ConditionalOnProperty(name = "firefly.ecm.adapter-type", havingValue = "s3")
-public class S3Adapter implements DocumentPort, DocumentContentPort {
-    // Implementation
+public class S3DocumentAdapter implements DocumentPort, DocumentContentPort {
+    // Implementation using AWS SDK
 }
 ```
 
 ### Adapter Selection
 
-The `AdapterSelector` chooses the appropriate adapter based on configuration:
+The `AdapterSelector` (provided by lib-ecm) chooses the appropriate adapter based on configuration:
 
 1. **Type Matching**: Matches `firefly.ecm.adapter-type` with adapter type
 2. **Feature Validation**: Ensures adapter supports required features
 3. **Configuration Validation**: Validates required properties are present
 4. **Priority Resolution**: Selects highest priority adapter if multiple match
+
+### Dependency Flow
+
+```
+Your Application
+    │
+    ├─ depends on ──> lib-ecm (port interfaces)
+    │
+    ├─ depends on ──> lib-ecm-adapter-s3
+    │                     │
+    │                     └─ depends on ──> lib-ecm
+    │                     └─ depends on ──> AWS SDK
+    │
+    └─ depends on ──> lib-ecm-adapter-docusign
+                          │
+                          └─ depends on ──> lib-ecm
+                          └─ depends on ──> DocuSign SDK
+```
 
 ### Adapter Features
 
@@ -167,31 +282,60 @@ Adapters declare their capabilities using `AdapterFeature` enum:
 
 ## Configuration System
 
-### Configuration Properties
+### Configuration in lib-ecm
 
-The `EcmProperties` class defines the configuration structure:
+The core library provides the configuration infrastructure:
 
 ```java
 @ConfigurationProperties(prefix = "firefly.ecm")
 public class EcmProperties {
     private Boolean enabled = true;
-    private String adapterType;
-    private Map<String, Object> properties;
-    private Connection connection = new Connection();
-    private Features features = new Features();
-    private Defaults defaults = new Defaults();
-    private Performance performance = new Performance();
+    private String adapterType;  // Selects which adapter to use
+    private ESignatureProperties esignature = new ESignatureProperties();
+    private Map<String, Object> adapter = new HashMap<>();  // Adapter-specific config
 }
+```
+
+### Adapter-Specific Configuration
+
+Each adapter library defines its own configuration properties. For example:
+
+**S3 Adapter Configuration** (in `lib-ecm-adapter-s3`):
+```yaml
+firefly:
+  ecm:
+    adapter-type: s3
+    adapter:
+      s3:
+        bucket-name: my-bucket
+        region: us-east-1
+```
+
+**DocuSign Adapter Configuration** (in `lib-ecm-adapter-docusign`):
+```yaml
+firefly:
+  ecm:
+    esignature:
+      provider: docusign
+    adapter:
+      docusign:
+        integration-key: ${DOCUSIGN_KEY}
+        user-id: ${DOCUSIGN_USER}
 ```
 
 ### Auto-Configuration
 
-The `EcmAutoConfiguration` class automatically configures the ECM system:
+The `EcmAutoConfiguration` class (in lib-ecm) automatically configures the ECM system:
 
-1. **Property Binding**: Binds configuration properties
-2. **Adapter Discovery**: Scans for adapter components
-3. **Port Provider Setup**: Configures port provider
-4. **Feature Validation**: Validates feature compatibility
+1. **Property Binding**: Binds core configuration properties
+2. **Adapter Registry Setup**: Creates the adapter registry
+3. **Port Provider Setup**: Configures the port provider
+4. **No-op Adapter Registration**: Registers fallback adapters
+
+Each adapter library provides its own auto-configuration that:
+1. **Registers adapter beans** when conditions are met
+2. **Binds adapter-specific properties**
+3. **Validates adapter configuration**
 
 ## Service Layer
 

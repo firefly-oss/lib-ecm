@@ -1,188 +1,87 @@
 # Amazon S3 Integration Guide
 
-This comprehensive guide shows how to integrate Amazon S3 as a document storage backend for the Firefly ECM Library. You'll learn to implement a complete S3 adapter that supports all ECM features including document management, folder hierarchies, versioning, and search.
+This guide shows how to integrate the Amazon S3 adapter for document storage with the Firefly ECM Library.
+
+## Overview
+
+The S3 adapter is provided as a **separate library** (`lib-ecm-adapter-s3`) that implements the ECM port interfaces for Amazon S3 storage. This guide covers:
+
+- Adding the S3 adapter dependency
+- Configuring AWS credentials and S3 bucket
+- Using the adapter in your application
+- Testing and troubleshooting
 
 ## Table of Contents
 
 1. [Prerequisites](#1-prerequisites)
-2. [Project Setup](#2-project-setup)
+2. [Add S3 Adapter Dependency](#2-add-s3-adapter-dependency)
 3. [AWS Account Configuration](#3-aws-account-configuration)
 4. [Application Configuration](#4-application-configuration)
-5. [S3 Adapter Implementation](#5-s3-adapter-implementation)
-6. [Service Layer Implementation](#6-service-layer-implementation)
-7. [REST API Implementation](#7-rest-api-implementation)
-8. [Testing](#8-testing)
-9. [Production Deployment](#9-production-deployment)
-10. [Troubleshooting](#10-troubleshooting)
+5. [Using the S3 Adapter](#5-using-the-s3-adapter)
+6. [Testing](#6-testing)
+7. [Production Deployment](#7-production-deployment)
+8. [Troubleshooting](#8-troubleshooting)
 
 ## 1. Prerequisites
 
 Before starting, ensure you have:
 
 - **AWS Account** with S3 access and billing configured
-- **Java 17+** installed and configured
-- **Spring Boot 3.0+** knowledge
+- **Java 21+** installed and configured
+- **Spring Boot 3.0+** application
 - **Maven 3.6+** or **Gradle 7.0+**
-- **Firefly ECM Library** understanding
+- **Firefly ECM Library** (`lib-ecm`) already added to your project
 - **Basic AWS CLI** knowledge (optional but recommended)
 
-## 2. Project Setup
+## 2. Add S3 Adapter Dependency
 
-### 2.1 Create Spring Boot Project
+### 2.1 Maven Configuration
 
-Create a new Spring Boot project with the required dependencies:
+Add the S3 adapter library to your `pom.xml`:
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0">
-    <modelVersion>4.0.0</modelVersion>
+<dependencies>
+    <!-- Firefly ECM Core Library (Port Interfaces) -->
+    <dependency>
+        <groupId>com.firefly</groupId>
+        <artifactId>lib-ecm</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </dependency>
 
-    <parent>
+    <!-- S3 Adapter Implementation -->
+    <dependency>
+        <groupId>com.firefly</groupId>
+        <artifactId>lib-ecm-adapter-s3</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- Your other dependencies -->
+    <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
-        <relativePath/>
-    </parent>
-
-    <groupId>com.example</groupId>
-    <artifactId>firefly-ecm-s3-demo</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
-
-    <properties>
-        <java.version>17</java.version>
-        <aws.sdk.version>2.20.26</aws.sdk.version>
-    </properties>
-
-    <dependencies>
-        <!-- Firefly ECM Library -->
-        <dependency>
-            <groupId>com.firefly</groupId>
-            <artifactId>lib-ecm</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <!-- Spring Boot Starters -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <!-- AWS SDK for S3 -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>${aws.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>auth</artifactId>
-            <version>${aws.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>regions</artifactId>
-            <version>${aws.sdk.version}</version>
-        </dependency>
-
-        <!-- Reactive Streams -->
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor.addons</groupId>
-            <artifactId>reactor-extra</artifactId>
-        </dependency>
-
-        <!-- JSON Processing -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>
-
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>localstack</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-</project>
+        <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
+</dependencies>
 ```
 
-### 2.2 Project Structure
+### 2.2 Gradle Configuration
 
-Create the following directory structure:
+For Gradle projects, add to your `build.gradle`:
 
+```gradle
+dependencies {
+    // Firefly ECM Core Library (Port Interfaces)
+    implementation 'com.firefly:lib-ecm:1.0.0-SNAPSHOT'
+
+    // S3 Adapter Implementation
+    implementation 'com.firefly:lib-ecm-adapter-s3:1.0.0-SNAPSHOT'
+
+    // Your other dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+}
 ```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/example/ecm/
-│   │       ├── EcmS3DemoApplication.java
-│   │       ├── adapter/
-│   │       │   ├── S3DocumentAdapter.java
-│   │       │   ├── S3DocumentContentAdapter.java
-│   │       │   ├── S3FolderAdapter.java
-│   │       │   └── S3DocumentSearchAdapter.java
-│   │       ├── service/
-│   │       │   ├── DocumentService.java
-│   │       │   ├── FolderService.java
-│   │       │   └── SearchService.java
-│   │       ├── controller/
-│   │       │   ├── DocumentController.java
-│   │       │   ├── FolderController.java
-│   │       │   └── SearchController.java
-│   │       ├── config/
-│   │       │   └── S3Configuration.java
-│   │       └── dto/
-│   │           ├── DocumentUploadRequest.java
-│   │           ├── FolderCreateRequest.java
-│   │           └── SearchRequest.java
-│   └── resources/
-│       ├── application.yml
-│       ├── application-dev.yml
-│       ├── application-prod.yml
-│       └── logback-spring.xml
-└── test/
-    └── java/
-        └── com/example/ecm/
-            ├── adapter/
-            ├── service/
-            └── integration/
-```
+
+**Note**: The S3 adapter library automatically includes the AWS SDK dependencies you need.
+
 
 ## 3. AWS Account Configuration
 
@@ -394,7 +293,7 @@ aws s3 rm s3://your-company-documents-dev/test.txt
 
 ### 4.1 Main Application Configuration
 
-Create `src/main/resources/application.yml` with comprehensive ECM configuration:
+Create `src/main/resources/application.yml`:
 
 ```yaml
 # Spring Boot Configuration
@@ -402,103 +301,31 @@ spring:
   application:
     name: "firefly-ecm-s3-demo"
 
-  # WebFlux configuration for reactive file handling
-  webflux:
-    multipart:
-      max-in-memory-size: 10MB        # Files smaller than this stay in memory
-      max-disk-usage-per-part: 100MB  # Larger files written to temp disk
-      max-parts: 128                  # Maximum number of parts in multipart request
-      max-headers-size: 10KB          # Maximum size of headers section
-
-  # Jackson configuration for JSON processing
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
-    deserialization:
-      fail-on-unknown-properties: false
-
-# Server configuration
-server:
-  port: 8080
-  error:
-    include-message: always
-    include-binding-errors: always
-
 # Firefly ECM Configuration
 firefly:
   ecm:
     # Enable ECM functionality
     enabled: true
 
-    # Specify S3 as the primary adapter
-    adapter-type: "s3"
+    # Select S3 adapter for document storage
+    adapter-type: s3
 
-    # S3-specific configuration properties
-    properties:
-      # Required properties
-      bucket-name: "your-company-documents-dev"
-      region: "us-east-1"
+    # S3 adapter configuration
+    adapter:
+      s3:
+        # Required properties
+        bucket-name: ${S3_BUCKET_NAME:your-company-documents-dev}
+        region: ${AWS_REGION:us-east-1}
 
-      # Optional properties for enhanced functionality
-      path-prefix: "documents/"              # Organize files with prefix
-      encryption: "AES256"                   # Server-side encryption
-      storage-class: "STANDARD"              # S3 storage class
+        # Optional: AWS credentials (uses default credential chain if not specified)
+        access-key: ${AWS_ACCESS_KEY_ID:}
+        secret-key: ${AWS_SECRET_ACCESS_KEY:}
 
-      # Advanced S3 features
-      enable-transfer-acceleration: false    # S3 Transfer Acceleration
-      enable-multipart-upload: true         # Multipart uploads for large files
-      multipart-threshold-mb: 100           # Files larger than this use multipart
-      multipart-part-size-mb: 10            # Size of each multipart chunk
+        # Optional: Custom S3 endpoint (for MinIO or other S3-compatible services)
+        # endpoint: http://localhost:9000
 
-      # Connection and retry settings
-      max-connections: 50                   # Maximum concurrent S3 connections
-      connection-timeout-seconds: 30        # Connection timeout
-      socket-timeout-seconds: 300          # Socket read timeout
-      retry-attempts: 3                    # Number of retry attempts
-
-      # Optional: Custom S3 endpoint (for S3-compatible services like MinIO)
-      # endpoint: "http://localhost:9000"
-
-      # Optional: Path-style access (required for some S3-compatible services)
-      # path-style-access: false
-
-    # Connection settings (global for all adapters)
-    connection:
-      connect-timeout: "PT30S"              # ISO-8601 duration format
-      read-timeout: "PT5M"                  # 5 minutes for large file operations
-      max-connections: 100                  # Maximum concurrent connections
-      retry-attempts: 3                     # Retry failed operations
-
-    # Feature flags - enable/disable specific ECM capabilities
-    features:
-      document-management: true             # Basic document CRUD operations
-      content-storage: true                 # Binary content storage and retrieval
-      versioning: true                      # Document version management
-      folder-management: true               # Folder creation and management
-      folder-hierarchy: true                # Hierarchical folder structures
-      permissions: true                     # Access control and permissions
-      security: true                        # Security features
-      search: true                          # Document search capabilities
-      auditing: true                        # Audit trail and logging
-      esignature: false                     # Digital signatures (requires separate adapter)
-      virus-scanning: false                 # Virus scanning (requires integration)
-      content-extraction: false             # Text/metadata extraction (requires integration)
-
-    # Default settings and limits
-    defaults:
-      max-file-size-mb: 100                 # Maximum file size allowed
-      allowed-extensions:                   # Permitted file extensions
-        - "pdf"
-        - "doc"
-        - "docx"
-        - "xls"
-        - "xlsx"
-        - "ppt"
-        - "pptx"
-        - "txt"
-        - "rtf"
-        - "jpg"
-        - "jpeg"
+        # Optional: Path-style access (required for some S3-compatible services)
+        # path-style-access: false
         - "png"
         - "gif"
         - "bmp"

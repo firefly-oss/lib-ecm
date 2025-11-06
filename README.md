@@ -1,8 +1,8 @@
 # Firefly ECM Library
 
-> **Enterprise Content Management for the Modern Era**
+> **Enterprise Content Management Port Interfaces for the Modern Era**
 
-A comprehensive, production-ready Enterprise Content Management (ECM) library built on hexagonal architecture principles. Designed for the Firefly OpenCore Platform, this library provides a unified interface for document management, digital signatures, and compliance across multiple storage backends and eSignature providers.
+A comprehensive, production-ready Enterprise Content Management (ECM) **port interface library** built on hexagonal architecture principles. This library provides the **core port interfaces** (business contracts) for document management, digital signatures, and intelligent document processing. Adapter implementations are provided in separate libraries, allowing you to choose and integrate only the providers you need.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://openjdk.java.net/)
@@ -10,148 +10,174 @@ A comprehensive, production-ready Enterprise Content Management (ECM) library bu
 
 ## 🎯 Purpose & Vision
 
-The Firefly ECM Library solves the challenge of **vendor lock-in** and **integration complexity** in enterprise content management. Instead of being tied to a single ECM system or cloud provider, organizations can:
+The Firefly ECM Library solves the challenge of **vendor lock-in** and **integration complexity** in enterprise content management by providing a **stable, vendor-agnostic interface layer**. This library contains:
 
-- **Switch between storage providers** (S3 ✅, Azure Blob ✅, MinIO*, Alfresco*) without changing business logic
-- **Integrate multiple eSignature providers** (DocuSign ✅, Adobe Sign ✅, Logalty 🏗️) through a unified API
-- **Process documents intelligently** with IDP providers (AWS Textract*, Azure Form Recognizer*, Google Document AI*)
+- **Port Interfaces**: Business contracts defining ECM operations (document management, eSignatures, IDP)
+- **Domain Models**: Core entities and value objects for ECM operations
+- **Adapter Infrastructure**: Framework for registering and selecting adapter implementations
+- **Auto-Configuration**: Spring Boot auto-configuration for seamless integration
+
+Organizations can:
+
+- **Switch between storage providers** without changing business logic
+- **Integrate multiple eSignature providers** through a unified API
+- **Process documents intelligently** with various IDP providers
 - **Scale horizontally** with cloud-native, reactive architecture
 - **Maintain compliance** with built-in audit trails and security features
 - **Future-proof applications** with a stable, vendor-agnostic interface
 
-> **Legend:** ✅ = Fully implemented and tested | 🏗️ = Skeleton/placeholder implementation | * = Planned for future release
+**Adapter implementations** are provided in separate libraries (see [Available Adapters](#-available-adapters) below).
 
-## 🏗️ Multi-Module Architecture
+## 🏗️ Architecture Overview
 
-This library is organized as a **multi-module Maven project** implementing **Hexagonal Architecture** (Ports and Adapters pattern), providing clean separation between business logic and external systems.
+This library implements **Hexagonal Architecture** (Ports and Adapters pattern), providing clean separation between business logic and external systems.
 
-**Key Benefits**: Pluggable adapters, testable design, scalable architecture, reactive programming, modular design
+**Key Benefits**: Pluggable adapters, testable design, scalable architecture, reactive programming, vendor independence
 
-### Module Structure
+### Library Structure
 
-```
-lib-ecm/                         # Parent POM
-├── lib-ecm-core/                # Core module (ports, domain, infrastructure)
-├── lib-ecm-adapter-s3/          # Amazon S3 document storage adapter
-├── lib-ecm-adapter-azure-blob/  # Microsoft Azure Blob Storage adapter
-├── lib-ecm-adapter-docusign/    # DocuSign eSignature adapter implementation
-├── lib-ecm-adapter-adobe-sign/  # Adobe Sign eSignature adapter implementation
-└── pom.xml                      # Parent POM with dependency management
-
-Standalone eSignature Adapters (separate repositories):
-├── lib-ecm-esignature-logalty/  # Logalty eSignature adapter (eIDAS-compliant)
-├── lib-ecm-esignature-adobe-sign/  # Standalone Adobe Sign adapter
-└── lib-ecm-esignature-docusign/    # Standalone DocuSign adapter
-```
-
-## 🚀 Current Implementation Status
-
-### ✅ Completed Features
-
-#### **Core Infrastructure**
-- ✅ **Hexagonal Architecture**: Complete ports and adapters implementation
-- ✅ **Domain Models**: All entities with proper validation and business rules
-- ✅ **Reactive Programming**: Full WebFlux integration with Mono/Flux
-- ✅ **Configuration Management**: YAML-based adapter selection and configuration
-- ✅ **Auto-Configuration**: Spring Boot auto-configuration for seamless integration
-- ✅ **Resilience Patterns**: Circuit breakers, retries, timeouts for fault tolerance
-
-#### **S3 Document Storage Adapter**
-- ✅ **Complete Implementation**: All DocumentPort and DocumentContentPort methods
-- ✅ **Advanced Features**: Pre-signed URLs, multipart uploads, streaming support
-- ✅ **Performance Optimized**: Connection pooling, resource management, transfer optimization
-- ✅ **Security**: Server-side encryption, access control, secure URL generation
-- ✅ **Error Handling**: Comprehensive exception handling with resilience patterns
-- ✅ **Testing**: **100% test success rate** (21/21 tests passing) with comprehensive coverage
-
-#### **Azure Blob Storage Adapter**
-- ✅ **Complete Implementation**: All DocumentPort and DocumentContentPort methods
-- ✅ **Enterprise Features**: Blob metadata storage, container organization, access tiers
-- ✅ **Performance Optimized**: Streaming uploads/downloads, connection pooling
-- ✅ **Security**: Azure AD integration, SAS tokens, encryption at rest
-- ✅ **Error Handling**: Comprehensive exception handling with resilience patterns
-
-#### **DocuSign eSignature Adapter**
-- ✅ **Complete Implementation**: All SignatureEnvelopePort methods
-- ✅ **Document Integration**: Real document retrieval from storage for envelope creation
-- ✅ **Advanced Features**: Batch operations, template support, embedded signing URLs
-- ✅ **Error Handling**: Robust error handling and status synchronization
-- ✅ **Testing**: **100% test success rate** (10/10 tests passing) with full DocuSign SDK integration
-
-#### **Adobe Sign eSignature Adapter**
-- ✅ **Complete Implementation**: All SignatureEnvelopePort, SignatureRequestPort, and SignatureValidationPort methods
-- ✅ **Document Integration**: Real document retrieval from storage for agreement creation
-- ✅ **Advanced Features**: OAuth 2.0 authentication, embedded signing, signature validation
-- ✅ **Error Handling**: Comprehensive error handling with circuit breaker and retry patterns
-- ✅ **Comprehensive Javadoc**: Fully documented API with detailed method descriptions
-
-#### **Logalty eSignature Adapter**
-- 🏗️ **Skeleton Implementation**: SignatureEnvelopePort with placeholder methods
-- 🏗️ **eIDAS Compliance**: Configuration ready for qualified electronic signatures
-- 🏗️ **OAuth 2.0 Support**: Client credentials authentication framework
-- 🏗️ **Advanced Features**: Biometric signatures, SMS/video verification configuration
-- 🏗️ **Resilience Patterns**: Circuit breaker and retry mechanisms in place
-- 📝 **Note**: Full implementation pending Logalty API documentation and credentials
-
-### 🔄 Architecture Highlights
-
-- **Production-Ready**: All modules compile successfully with **100% test success rate** (31/31 tests passing)
-- **Vendor-Agnostic**: Switch between storage providers without changing business logic
-- **Cloud-Native**: Built for scalability with reactive programming and resilience patterns
-- **Enterprise-Grade**: Comprehensive error handling, monitoring, and security features
-
-### 🧪 Test Coverage & Quality
-
-| **Module** | **Tests** | **Success Rate** | **Coverage** |
-|------------|-----------|------------------|--------------|
-| **ECM Core** | 0 | ✅ **100%** | Complete |
-| **S3 Adapter** | 21 | ✅ **100%** | All operations |
-| **DocuSign Adapter** | 10 | ✅ **100%** | Full workflow |
-| **TOTAL** | **31** | ✅ **100%** | **Production Ready** |
-
-## 📦 Core Module Structure
-
-The core module follows **Domain-Driven Design** principles with clear package organization:
+This is a **single-module library** containing:
 
 ```
-com.firefly.core.ecm/
-├── domain/
-│   ├── model/                   # Domain Entities
-│   │   ├── document/            # Document, DocumentVersion
-│   │   ├── folder/              # Folder, FolderPermissions
-│   │   ├── security/            # Permission
-│   │   ├── audit/               # AuditEvent
-│   │   ├── esignature/          # SignatureEnvelope, SignatureRequest
-│   │   └── idp/                 # DocumentProcessingRequest, ExtractedData
-│   ├── enums/                   # Domain Enumerations
-│   └── dto/                     # Data Transfer Objects
-├── port/                        # Business Interfaces (Ports)
-│   ├── document/                # Document management ports
-│   ├── folder/                  # Folder management ports
-│   ├── security/                # Security and permissions ports
-│   ├── audit/                   # Audit and compliance ports
-│   ├── esignature/              # Digital signature ports
-│   └── idp/                     # Intelligent Document Processing ports
-├── adapter/                     # Adapter Infrastructure
-├── config/                      # Spring Boot Configuration
-└── service/                     # Application Services
+lib-ecm/                         # Port Interfaces Library
+├── src/main/java/
+│   └── com.firefly.core.ecm/
+│       ├── port/                # Port Interfaces (business contracts)
+│       │   ├── document/        # Document management ports
+│       │   ├── folder/          # Folder management ports
+│       │   ├── security/        # Security and permissions ports
+│       │   ├── audit/           # Audit and compliance ports
+│       │   ├── esignature/      # Digital signature ports
+│       │   └── idp/             # Intelligent Document Processing ports
+│       ├── domain/              # Domain Models and DTOs
+│       ├── adapter/             # Adapter infrastructure (registry, selector)
+│       ├── config/              # Spring Boot auto-configuration
+│       └── service/             # Core services (EcmPortProvider)
+└── pom.xml
 ```
+
+### Adapter Libraries (Separate Repositories)
+
+Adapter implementations are provided in separate libraries that you add as dependencies:
+
+```
+Document Storage Adapters:
+├── lib-ecm-adapter-s3           # Amazon S3 adapter
+├── lib-ecm-adapter-azure-blob   # Azure Blob Storage adapter
+├── lib-ecm-adapter-minio        # MinIO adapter
+└── lib-ecm-adapter-alfresco     # Alfresco Content Services adapter
+
+eSignature Adapters:
+├── lib-ecm-adapter-docusign     # DocuSign adapter
+├── lib-ecm-adapter-adobe-sign   # Adobe Sign adapter
+└── lib-ecm-adapter-logalty      # Logalty adapter (eIDAS-compliant)
+
+IDP Adapters:
+├── lib-ecm-adapter-aws-textract      # AWS Textract adapter
+├── lib-ecm-adapter-azure-form-recognizer  # Azure Form Recognizer adapter
+└── lib-ecm-adapter-google-document-ai     # Google Document AI adapter
+```
+
+## 🚀 What's Included in This Library
+
+### ✅ Port Interfaces (Business Contracts)
+
+This library provides **complete port interface definitions** for:
+
+#### **Document Management Ports**
+- ✅ **DocumentPort**: Document CRUD operations (create, read, update, delete)
+- ✅ **DocumentContentPort**: Binary content storage and streaming
+- ✅ **DocumentVersionPort**: Version management and history
+- ✅ **DocumentSearchPort**: Search and query capabilities
+
+#### **Folder Management Ports**
+- ✅ **FolderPort**: Folder CRUD and organization
+- ✅ **FolderHierarchyPort**: Hierarchical folder operations
+
+#### **Security & Permissions Ports**
+- ✅ **PermissionPort**: Access control and permissions
+- ✅ **DocumentSecurityPort**: Document-level security operations
+
+#### **Audit & Compliance Ports**
+- ✅ **AuditPort**: Audit logging and compliance tracking
+
+#### **eSignature Ports**
+- ✅ **SignatureEnvelopePort**: Envelope lifecycle management
+- ✅ **SignatureRequestPort**: Signature request operations
+- ✅ **SignatureValidationPort**: Signature verification
+- ✅ **SignatureProofPort**: Signature proof and evidence
+
+#### **Intelligent Document Processing (IDP) Ports**
+- ✅ **DocumentExtractionPort**: OCR and text extraction
+- ✅ **DocumentClassificationPort**: Document type classification
+- ✅ **DataExtractionPort**: Structured data extraction
+- ✅ **DocumentValidationPort**: Document validation and quality checks
+
+### ✅ Core Infrastructure
+
+- ✅ **Domain Models**: Complete entity definitions with validation
+- ✅ **Adapter Infrastructure**: Registry, selector, and validation framework
+- ✅ **Auto-Configuration**: Spring Boot auto-configuration
+- ✅ **Reactive Support**: Full Project Reactor integration
+- ✅ **Graceful Degradation**: No-op adapters for missing implementations
+- ✅ **Comprehensive Javadoc**: Fully documented APIs
+
+### 🧪 Test Coverage
+
+| **Component** | **Tests** | **Success Rate** | **Status** |
+|---------------|-----------|------------------|------------|
+| **Core Library** | 11 | ✅ **100%** | Production Ready |
+| **Port Interfaces** | - | ✅ **Complete** | All defined |
+| **Domain Models** | - | ✅ **Complete** | Fully validated |
+
+## 📦 Available Adapters
+
+Adapter implementations are provided in **separate libraries**. Add the adapters you need as Maven dependencies:
+
+### Document Storage Adapters
+
+| Adapter | Artifact ID | Status | Repository |
+|---------|-------------|--------|------------|
+| **Amazon S3** | `lib-ecm-adapter-s3` | ✅ Available | [firefly-oss/lib-ecm-adapter-s3](https://github.com/firefly-oss/lib-ecm-adapter-s3) |
+| **Azure Blob** | `lib-ecm-adapter-azure-blob` | ✅ Available | [firefly-oss/lib-ecm-adapter-azure-blob](https://github.com/firefly-oss/lib-ecm-adapter-azure-blob) |
+| **MinIO** | `lib-ecm-adapter-minio` | 🔜 Planned | - |
+| **Alfresco** | `lib-ecm-adapter-alfresco` | 🔜 Planned | - |
+
+### eSignature Adapters
+
+| Adapter | Artifact ID | Status | Repository |
+|---------|-------------|--------|------------|
+| **DocuSign** | `lib-ecm-adapter-docusign` | ✅ Available | [firefly-oss/lib-ecm-adapter-docusign](https://github.com/firefly-oss/lib-ecm-adapter-docusign) |
+| **Adobe Sign** | `lib-ecm-adapter-adobe-sign` | ✅ Available | [firefly-oss/lib-ecm-adapter-adobe-sign](https://github.com/firefly-oss/lib-ecm-adapter-adobe-sign) |
+| **Logalty** | `lib-ecm-adapter-logalty` | 🔜 Planned | - |
+
+### IDP Adapters
+
+| Adapter | Artifact ID | Status | Repository |
+|---------|-------------|--------|------------|
+| **AWS Textract** | `lib-ecm-adapter-aws-textract` | 🔜 Planned | - |
+| **Azure Form Recognizer** | `lib-ecm-adapter-azure-form-recognizer` | 🔜 Planned | - |
+| **Google Document AI** | `lib-ecm-adapter-google-document-ai` | 🔜 Planned | - |
+
+> **Legend:** ✅ = Available | 🔜 = Planned
 
 ## 🚀 Quick Start
 
 ### 1. Add Dependencies
 
-Add the core module and desired adapter modules to your Spring Boot project:
+Add the **core library** (port interfaces) and your chosen **adapter libraries** to your Spring Boot project:
 
 ```xml
-<!-- Core ECM Library -->
+<!-- Core ECM Library (Port Interfaces) - REQUIRED -->
 <dependency>
     <groupId>com.firefly</groupId>
-    <artifactId>lib-ecm-core</artifactId>
+    <artifactId>lib-ecm</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
-<!-- S3 Adapter (optional) -->
+<!-- Add adapter implementations as needed -->
+
+<!-- Amazon S3 Adapter (optional) -->
 <dependency>
     <groupId>com.firefly</groupId>
     <artifactId>lib-ecm-adapter-s3</artifactId>
@@ -165,45 +191,39 @@ Add the core module and desired adapter modules to your Spring Boot project:
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 
-<!-- Logalty Adapter (optional) -->
+<!-- Azure Blob Storage Adapter (optional) -->
 <dependency>
     <groupId>com.firefly</groupId>
-    <artifactId>lib-ecm-esignature-logalty</artifactId>
+    <artifactId>lib-ecm-adapter-azure-blob</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
-### 2. Configure Adapters
+### 2. Configure Your Adapters
 
-Choose and configure the adapters you want to use:
+Configure the adapters you've added via `application.yml`:
 
-#### S3 Adapter Configuration
+#### Example: S3 + DocuSign Configuration
 
 ```yaml
-# Enable S3 adapter for document storage
 firefly:
   ecm:
+    # Select document storage adapter
     adapter-type: s3
+
+    # Select eSignature provider
+    esignature:
+      provider: docusign
 
 # S3 adapter configuration
 firefly:
   ecm:
     adapter:
       s3:
-        bucket-name: your-bucket-name
-        region: us-east-1
+        bucket-name: ${S3_BUCKET_NAME}
+        region: ${AWS_REGION}
         access-key: ${AWS_ACCESS_KEY_ID}
         secret-key: ${AWS_SECRET_ACCESS_KEY}
-```
-
-#### DocuSign Adapter Configuration
-
-```yaml
-# Enable DocuSign adapter for eSignatures
-firefly:
-  ecm:
-    esignature:
-      provider: docusign
 
 # DocuSign adapter configuration
 firefly:
@@ -216,128 +236,140 @@ firefly:
         private-key: ${DOCUSIGN_PRIVATE_KEY}
 ```
 
-#### Logalty Adapter Configuration
+### 3. Use Port Interfaces in Your Application
 
-```yaml
-# Enable Logalty adapter for eIDAS-compliant eSignatures
-firefly:
-  ecm:
-    esignature:
-      provider: logalty
-
-# Logalty adapter configuration
-firefly:
-  ecm:
-    adapter:
-      logalty:
-        client-id: ${LOGALTY_CLIENT_ID}
-        client-secret: ${LOGALTY_CLIENT_SECRET}
-        base-url: https://api.logalty.com
-        sandbox-mode: false
-        default-signature-type: ADVANCED
-```
-
-### 3. Use in Your Application
+Inject and use the port interfaces - the framework automatically provides the configured adapter implementation:
 
 ```java
 @Service
+@RequiredArgsConstructor
 public class DocumentService {
-    
-    @Autowired
-    private DocumentPort documentPort;
-    
-    @Autowired
-    private DocumentContentPort contentPort;
-    
+
+    private final EcmPortProvider portProvider;
+
     public Mono<Document> uploadDocument(String name, byte[] content) {
+        // Get the configured DocumentPort implementation
+        DocumentPort documentPort = portProvider.getDocumentPort()
+            .orElseThrow(() -> new IllegalStateException("No document adapter configured"));
+
         Document document = Document.builder()
             .name(name)
             .mimeType("application/pdf")
             .size((long) content.length)
             .build();
-            
+
         return documentPort.createDocument(document, content);
+    }
+
+    public Mono<SignatureEnvelope> sendForSignature(UUID documentId, List<String> signers) {
+        // Get the configured SignatureEnvelopePort implementation
+        SignatureEnvelopePort signaturePort = portProvider.getSignatureEnvelopePort()
+            .orElseThrow(() -> new IllegalStateException("No eSignature adapter configured"));
+
+        // Create and send envelope
+        SignatureEnvelope envelope = SignatureEnvelope.builder()
+            .documentId(documentId)
+            .signers(signers)
+            .build();
+
+        return signaturePort.createEnvelope(envelope)
+            .flatMap(signaturePort::sendEnvelope);
     }
 }
 ```
 
-## 📋 Core Features
+## 📋 Port Interface Capabilities
 
-### Document Management
-- **CRUD Operations**: Create, read, update, delete documents
-- **Content Storage**: Binary content with streaming support
-- **Version Control**: Complete document version history
-- **Search & Query**: Full-text and metadata search capabilities
+This library defines port interfaces for the following ECM capabilities. Actual functionality depends on the adapter implementations you choose:
 
-### Folder Management
-- **Hierarchical Structure**: Nested folder organization
-- **Path Management**: Full path resolution and navigation
-- **Bulk Operations**: Move, copy, and organize multiple items
+### Document Management Ports
+- **DocumentPort**: Create, read, update, delete documents
+- **DocumentContentPort**: Binary content storage with streaming support
+- **DocumentVersionPort**: Complete document version history
+- **DocumentSearchPort**: Full-text and metadata search capabilities
 
-### Security & Permissions
-- **Fine-grained Access Control**: Read, write, delete, share permissions
-- **Role-based Security**: User and group-based permissions
-- **Document Encryption**: Content encryption at rest
-- **Legal Hold**: Compliance and retention management
+### Folder Management Ports
+- **FolderPort**: Folder CRUD operations
+- **FolderHierarchyPort**: Nested folder organization and path management
 
-### Digital Signatures
-- **Multi-provider Support**: DocuSign, Adobe Sign, and more
-- **Envelope Management**: Create, send, track signature workflows
-- **Validation & Proof**: Signature verification and audit trails
-- **Compliance**: eIDAS, ESIGN Act, and other regulatory standards
+### Security & Permissions Ports
+- **PermissionPort**: Fine-grained access control (read, write, delete, share)
+- **DocumentSecurityPort**: Document encryption and security operations
 
-### Intelligent Document Processing (IDP)
-- **Text Extraction**: OCR and handwriting recognition framework ready for multiple providers
-- **Document Classification**: Automatic document type detection and categorization interfaces
-- **Data Extraction**: Forms, tables, key-value pairs, and structured data extraction ports
-- **Document Validation**: Business rules, compliance checks, and quality assessment framework
-- **Multi-provider Ready**: Framework prepared for AWS Textract*, Azure Form Recognizer*, Google Document AI*
+### Digital Signature Ports
+- **SignatureEnvelopePort**: Envelope lifecycle management
+- **SignatureRequestPort**: Signature request operations
+- **SignatureValidationPort**: Signature verification and validation
+- **SignatureProofPort**: Signature proof and audit trails
 
-*Note: IDP port interfaces and framework are complete. Concrete adapter implementations are planned for future releases.
+### Intelligent Document Processing (IDP) Ports
+- **DocumentExtractionPort**: OCR and text extraction
+- **DocumentClassificationPort**: Automatic document type detection
+- **DataExtractionPort**: Forms, tables, key-value pairs extraction
+- **DocumentValidationPort**: Business rules and quality checks
 
-### Audit & Compliance
-- **Complete Audit Trail**: Track all document and signature activities
-- **Compliance Reporting**: Generate regulatory compliance reports
-- **Data Retention**: Automated archival and purging policies
-- **Security Monitoring**: Real-time security event tracking
+### Audit & Compliance Ports
+- **AuditPort**: Complete audit trail for all operations
+- **Compliance tracking**: Regulatory compliance and reporting
 
-## 🔧 Integration Guides
+> **Note**: Port interfaces define the contracts. Actual features depend on the adapter implementations you add to your project.
 
-Detailed integration guides are available in the [docs/guides](docs/guides) directory:
+## 🔧 Adapter Integration Guides
 
-**✅ Available Implementations:**
-- **[Amazon S3 Integration](docs/guides/s3-integration.md)** - Complete guide for S3 document storage
-- **[DocuSign Integration](docs/guides/docusign-integration.md)** - Step-by-step DocuSign eSignature setup
+Detailed guides for integrating adapter libraries are available in the [docs/guides](docs/guides) directory:
 
-**🚧 Planned Implementations (Design Specifications):**
-- **[Alfresco Integration](docs/guides/alfresco-integration.md)** - Enterprise ECM with Alfresco (planned)
-- **[Azure Blob Storage](docs/guides/azure-integration.md)** - Microsoft Azure cloud storage (planned)
-- **[MinIO Integration](docs/guides/minio-integration.md)** - Self-hosted S3-compatible storage (planned)
-- **[AWS Textract Integration](docs/idp/aws-textract-integration.md)** - AWS Textract for document processing (planned)
-- **[Azure Form Recognizer Integration](docs/idp/azure-form-recognizer-integration.md)** - Azure cognitive services (planned)
-- **[Google Document AI Integration](docs/idp/google-document-ai-integration.md)** - Google Cloud document processing (planned)
+**Document Storage Adapters:**
+- **[Amazon S3 Integration](docs/guides/s3-integration.md)** - How to add and configure the S3 adapter
+- **[Azure Blob Storage](docs/guides/azure-integration.md)** - How to add and configure the Azure Blob adapter
+- **[MinIO Integration](docs/guides/minio-integration.md)** - How to add and configure the MinIO adapter (planned)
+- **[Alfresco Integration](docs/guides/alfresco-integration.md)** - How to add and configure the Alfresco adapter (planned)
+
+**eSignature Adapters:**
+- **[DocuSign Integration](docs/guides/docusign-integration.md)** - How to add and configure the DocuSign adapter
+
+**IDP Adapters (Planned):**
+- **[AWS Textract Integration](docs/idp/aws-textract-integration.md)** - AWS Textract adapter integration
+- **[Azure Form Recognizer Integration](docs/idp/azure-form-recognizer-integration.md)** - Azure Form Recognizer adapter integration
+- **[Google Document AI Integration](docs/idp/google-document-ai-integration.md)** - Google Document AI adapter integration
 
 ## 📚 Documentation
 
-### Integration Guides
-- **[S3 Integration Guide](docs/adapters/s3-integration-guide.md)** - Complete Amazon S3 adapter setup
-- **[DocuSign Integration Guide](docs/adapters/docusign-integration-guide.md)** - Complete DocuSign adapter integration
+### Core Library Documentation
+- **[Architecture Guide](docs/architecture.md)** - Hexagonal architecture and design principles
+- **[Configuration Reference](docs/configuration.md)** - Configuration options and properties
+- **[API Reference](docs/api/)** - Port interface documentation
 
-### Reference Documentation
-- **[Configuration Reference](docs/configuration-reference.md)** - All configuration properties and examples
-- **[API Reference](docs/api/)** - Complete API documentation
-- **[IDP Guide](docs/idp/)** - Intelligent Document Processing documentation
+### Adapter Integration Guides
+- **[S3 Adapter Guide](docs/guides/s3-integration.md)** - Amazon S3 adapter integration
+- **[Azure Blob Adapter Guide](docs/guides/azure-integration.md)** - Azure Blob Storage adapter integration
+- **[DocuSign Adapter Guide](docs/guides/docusign-integration.md)** - DocuSign adapter integration
+- **[Alfresco Adapter Guide](docs/guides/alfresco-integration.md)** - Alfresco adapter integration (planned)
+- **[MinIO Adapter Guide](docs/guides/minio-integration.md)** - MinIO adapter integration (planned)
+
+### IDP Adapter Guides
+- **[IDP Overview](docs/idp/)** - Intelligent Document Processing overview
+- **[AWS Textract](docs/idp/aws-textract-integration.md)** - AWS Textract adapter (planned)
+- **[Azure Form Recognizer](docs/idp/azure-form-recognizer-integration.md)** - Azure Form Recognizer adapter (planned)
+- **[Google Document AI](docs/idp/google-document-ai-integration.md)** - Google Document AI adapter (planned)
 
 ### Development
 - **[Examples](docs/examples/)** - Working code examples
-- **[Contributing Guide](docs/contributing.md)** - How to contribute
-- **[Architecture Guide](docs/architecture.md)** - Detailed architecture documentation
 - **[Testing Guide](docs/testing.md)** - Testing strategies and examples
 
 ## 🤝 Contributing
 
-We welcome contributions to the Firefly ECM Library! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+We welcome contributions to the Firefly ECM Library!
 
+### Contributing to Core Library (Port Interfaces)
+- New port interface definitions
+- Domain model enhancements
+- Infrastructure improvements
+- Documentation updates
+
+### Contributing Adapter Implementations
+Adapter implementations are in separate repositories. See the [Available Adapters](#-available-adapters) section for repository links.
+
+Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
 - Code style and conventions
 - Testing requirements
 - Pull request process
