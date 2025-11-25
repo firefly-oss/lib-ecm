@@ -21,7 +21,6 @@ import com.firefly.core.ecm.port.audit.AuditPort;
 import com.firefly.core.ecm.port.document.*;
 import com.firefly.core.ecm.port.esignature.*;
 import com.firefly.core.ecm.port.folder.*;
-import com.firefly.core.ecm.port.idp.*;
 import com.firefly.core.ecm.port.security.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -181,43 +180,4 @@ public class NoOpAdapterFactory {
         return new NoOpGenericAdapter<>("SignatureProofPort", SignatureProofPort.class).getProxy();
     }
 
-    /**
-     * Creates a no-op DocumentExtractionPort adapter.
-     *
-     * @return a new no-op adapter instance
-     */
-    public DocumentExtractionPort createDocumentExtractionPort() {
-        log.info("Creating no-op DocumentExtractionPort adapter as fallback");
-        return new NoOpGenericAdapter<>("DocumentExtractionPort", DocumentExtractionPort.class).getProxy();
-    }
-
-    /**
-     * Creates a no-op DocumentClassificationPort adapter.
-     *
-     * @return a new no-op adapter instance
-     */
-    public DocumentClassificationPort createDocumentClassificationPort() {
-        log.info("Creating no-op DocumentClassificationPort adapter as fallback");
-        return new NoOpGenericAdapter<>("DocumentClassificationPort", DocumentClassificationPort.class).getProxy();
-    }
-
-    /**
-     * Creates a no-op DocumentValidationPort adapter.
-     *
-     * @return a new no-op adapter instance
-     */
-    public DocumentValidationPort createDocumentValidationPort() {
-        log.info("Creating no-op DocumentValidationPort adapter as fallback");
-        return new NoOpGenericAdapter<>("DocumentValidationPort", DocumentValidationPort.class).getProxy();
-    }
-
-    /**
-     * Creates a no-op DataExtractionPort adapter.
-     *
-     * @return a new no-op adapter instance
-     */
-    public DataExtractionPort createDataExtractionPort() {
-        log.info("Creating no-op DataExtractionPort adapter as fallback");
-        return new NoOpGenericAdapter<>("DataExtractionPort", DataExtractionPort.class).getProxy();
-    }
 }

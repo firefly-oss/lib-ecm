@@ -82,7 +82,6 @@ public interface DocumentPort {
      * @param content the binary content of the document as a byte array
      * @return a Mono containing the created document with all system fields populated
      * @throws IllegalArgumentException if document or content is null
-     * @throws DocumentCreationException if the document cannot be created
      */
     Mono<Document> createDocument(Document document, byte[] content);
 
@@ -114,7 +113,6 @@ public interface DocumentPort {
      * @param document the document with updated metadata; must include valid ID
      * @return a Mono containing the updated document with refreshed system fields
      * @throws IllegalArgumentException if document or document ID is null
-     * @throws DocumentNotFoundException if the document does not exist
      */
     Mono<Document> updateDocument(Document document);
 
@@ -131,8 +129,6 @@ public interface DocumentPort {
      * @param documentId the unique Long identifier of the document to delete
      * @return a Mono that completes when the deletion is finished
      * @throws IllegalArgumentException if documentId is null
-     * @throws DocumentNotFoundException if the document does not exist
-     * @throws DocumentDeletionException if the document cannot be deleted due to policies
      */
     Mono<Void> deleteDocument(UUID documentId);
 
@@ -207,9 +203,6 @@ public interface DocumentPort {
      * @param targetFolderId the unique Long identifier of the destination folder
      * @return a Mono containing the updated document with new folder reference
      * @throws IllegalArgumentException if documentId or targetFolderId is null
-     * @throws DocumentNotFoundException if the document doesn't exist
-     * @throws FolderNotFoundException if the target folder doesn't exist
-     * @throws InsufficientPermissionException if the operation is not permitted
      */
     Mono<Document> moveDocument(UUID documentId, UUID targetFolderId);
 
@@ -241,9 +234,6 @@ public interface DocumentPort {
      * @param newName optional new name for the copied document; if null, uses original name
      * @return a Mono containing the newly created document copy
      * @throws IllegalArgumentException if documentId or targetFolderId is null
-     * @throws DocumentNotFoundException if the source document doesn't exist
-     * @throws FolderNotFoundException if the target folder doesn't exist
-     * @throws InsufficientPermissionException if the operation is not permitted
      */
     Mono<Document> copyDocument(UUID documentId, UUID targetFolderId, String newName);
 

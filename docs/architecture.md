@@ -42,7 +42,6 @@ This architecture enables:
 │  │  • DocumentContentPort    • AuditPort                     │  │
 │  │  • SignatureEnvelopePort  • FolderPort                    │  │
 │  │  • DocumentVersionPort    • SearchPort                    │  │
-│  │  • DataExtractionPort     • DocumentClassificationPort    │  │
 │  └───────────────────────────────────────────────────────────┘  │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │              ADAPTER INFRASTRUCTURE                       │  │
@@ -158,11 +157,6 @@ Located in `com.firefly.core.ecm.port`, these define the business interfaces:
 - **SignatureValidationPort**: Signature validation
 - **SignatureProofPort**: Signature proof and evidence
 
-#### IDP (Intelligent Document Processing) Ports
-- **DocumentExtractionPort**: OCR and text extraction
-- **DocumentClassificationPort**: Document type classification
-- **DataExtractionPort**: Structured data extraction
-- **DocumentValidationPort**: Document validation
 
 ### Adapter Infrastructure
 

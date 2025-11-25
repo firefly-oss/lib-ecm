@@ -78,7 +78,6 @@ public interface DocumentContentPort {
      * @param mimeType the MIME type of the content (e.g., "application/pdf")
      * @return a Mono containing the storage path where content was stored
      * @throws IllegalArgumentException if any parameter is null
-     * @throws ContentStorageException if the content cannot be stored
      */
     Mono<String> storeContent(UUID documentId, byte[] content, String mimeType);
 
@@ -103,7 +102,6 @@ public interface DocumentContentPort {
      * @param contentLength the expected total content length in bytes (may be null if unknown)
      * @return a Mono containing the storage path where content was stored
      * @throws IllegalArgumentException if documentId, contentStream, or mimeType is null
-     * @throws ContentStorageException if the content cannot be stored
      */
     Mono<String> storeContentStream(UUID documentId, Flux<DataBuffer> contentStream, String mimeType, Long contentLength);
 
@@ -195,7 +193,6 @@ public interface DocumentContentPort {
      * @param documentId the unique Long identifier of the document
      * @return a Mono that completes when the deletion is finished
      * @throws IllegalArgumentException if documentId is null
-     * @throws ContentDeletionException if the content cannot be deleted
      */
     Mono<Void> deleteContent(UUID documentId);
 
@@ -209,7 +206,6 @@ public interface DocumentContentPort {
      * @param storagePath the internal storage path of the content to delete
      * @return a Mono that completes when the deletion is finished
      * @throws IllegalArgumentException if storagePath is null or empty
-     * @throws ContentDeletionException if the content cannot be deleted
      */
     Mono<Void> deleteContentByPath(String storagePath);
 
@@ -257,7 +253,6 @@ public interface DocumentContentPort {
      * @param algorithm the checksum algorithm to use (e.g., "SHA-256", "MD5")
      * @return a Mono containing the calculated checksum as a hexadecimal string
      * @throws IllegalArgumentException if documentId or algorithm is null
-     * @throws UnsupportedAlgorithmException if the algorithm is not supported
      */
     Mono<String> calculateChecksum(UUID documentId, String algorithm);
 
@@ -280,7 +275,6 @@ public interface DocumentContentPort {
      * @param algorithm the checksum algorithm to use for calculation
      * @return a Mono containing true if checksums match, false otherwise
      * @throws IllegalArgumentException if any parameter is null
-     * @throws UnsupportedAlgorithmException if the algorithm is not supported
      */
     Mono<Boolean> verifyChecksum(UUID documentId, String expectedChecksum, String algorithm);
 }

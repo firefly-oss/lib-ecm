@@ -2,7 +2,7 @@
 
 > **Enterprise Content Management Port Interfaces for the Modern Era**
 
-A comprehensive, production-ready Enterprise Content Management (ECM) **port interface library** built on hexagonal architecture principles. This library provides the **core port interfaces** (business contracts) for document management, digital signatures, and intelligent document processing. Adapter implementations are provided in separate libraries, allowing you to choose and integrate only the providers you need.
+A comprehensive, production-ready Enterprise Content Management (ECM) **port interface library** built on hexagonal architecture principles. This library provides the **core port interfaces** (business contracts) for document management and digital signatures. Adapter implementations are provided in separate libraries, allowing you to choose and integrate only the providers you need.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Java](https://img.shields.io/badge/Java-21+-orange.svg)](https://openjdk.java.net/)
@@ -12,7 +12,7 @@ A comprehensive, production-ready Enterprise Content Management (ECM) **port int
 
 The Firefly ECM Library solves the challenge of **vendor lock-in** and **integration complexity** in enterprise content management by providing a **stable, vendor-agnostic interface layer**. This library contains:
 
-- **Port Interfaces**: Business contracts defining ECM operations (document management, eSignatures, IDP)
+- **Port Interfaces**: Business contracts defining ECM operations (document management, eSignatures)
 - **Domain Models**: Core entities and value objects for ECM operations
 - **Adapter Infrastructure**: Framework for registering and selecting adapter implementations
 - **Auto-Configuration**: Spring Boot auto-configuration for seamless integration
@@ -21,7 +21,6 @@ Organizations can:
 
 - **Switch between storage providers** without changing business logic
 - **Integrate multiple eSignature providers** through a unified API
-- **Process documents intelligently** with various IDP providers
 - **Scale horizontally** with cloud-native, reactive architecture
 - **Maintain compliance** with built-in audit trails and security features
 - **Future-proof applications** with a stable, vendor-agnostic interface
@@ -48,7 +47,6 @@ lib-ecm/                         # Port Interfaces Library
 │       │   ├── security/        # Security and permissions ports
 │       │   ├── audit/           # Audit and compliance ports
 │       │   ├── esignature/      # Digital signature ports
-│       │   └── idp/             # Intelligent Document Processing ports
 │       ├── domain/              # Domain Models and DTOs
 │       ├── adapter/             # Adapter infrastructure (registry, selector)
 │       ├── config/              # Spring Boot auto-configuration
@@ -72,10 +70,6 @@ eSignature Adapters:
 ├── lib-ecm-adapter-adobe-sign   # Adobe Sign adapter
 └── lib-ecm-adapter-logalty      # Logalty adapter (eIDAS-compliant)
 
-IDP Adapters:
-├── lib-ecm-adapter-aws-textract      # AWS Textract adapter
-├── lib-ecm-adapter-azure-form-recognizer  # Azure Form Recognizer adapter
-└── lib-ecm-adapter-google-document-ai     # Google Document AI adapter
 ```
 
 ## 🚀 What's Included in This Library
@@ -107,11 +101,6 @@ This library provides **complete port interface definitions** for:
 - ✅ **SignatureValidationPort**: Signature verification
 - ✅ **SignatureProofPort**: Signature proof and evidence
 
-#### **Intelligent Document Processing (IDP) Ports**
-- ✅ **DocumentExtractionPort**: OCR and text extraction
-- ✅ **DocumentClassificationPort**: Document type classification
-- ✅ **DataExtractionPort**: Structured data extraction
-- ✅ **DocumentValidationPort**: Document validation and quality checks
 
 ### ✅ Core Infrastructure
 
@@ -151,13 +140,6 @@ Adapter implementations are provided in **separate libraries**. Add the adapters
 | **Adobe Sign** | `lib-ecm-adapter-adobe-sign` | ✅ Available | [firefly-oss/lib-ecm-adapter-adobe-sign](https://github.com/firefly-oss/lib-ecm-adapter-adobe-sign) |
 | **Logalty** | `lib-ecm-adapter-logalty` | 🔜 Planned | - |
 
-### IDP Adapters
-
-| Adapter | Artifact ID | Status | Repository |
-|---------|-------------|--------|------------|
-| **AWS Textract** | `lib-ecm-adapter-aws-textract` | 🔜 Planned | - |
-| **Azure Form Recognizer** | `lib-ecm-adapter-azure-form-recognizer` | 🔜 Planned | - |
-| **Google Document AI** | `lib-ecm-adapter-google-document-ai` | 🔜 Planned | - |
 
 > **Legend:** ✅ = Available | 🔜 = Planned
 
@@ -302,11 +284,6 @@ This library defines port interfaces for the following ECM capabilities. Actual 
 - **SignatureValidationPort**: Signature verification and validation
 - **SignatureProofPort**: Signature proof and audit trails
 
-### Intelligent Document Processing (IDP) Ports
-- **DocumentExtractionPort**: OCR and text extraction
-- **DocumentClassificationPort**: Automatic document type detection
-- **DataExtractionPort**: Forms, tables, key-value pairs extraction
-- **DocumentValidationPort**: Business rules and quality checks
 
 ### Audit & Compliance Ports
 - **AuditPort**: Complete audit trail for all operations
@@ -327,10 +304,6 @@ Detailed guides for integrating adapter libraries are available in the [docs/gui
 **eSignature Adapters:**
 - **[DocuSign Integration](docs/guides/docusign-integration.md)** - How to add and configure the DocuSign adapter
 
-**IDP Adapters (Planned):**
-- **[AWS Textract Integration](docs/idp/aws-textract-integration.md)** - AWS Textract adapter integration
-- **[Azure Form Recognizer Integration](docs/idp/azure-form-recognizer-integration.md)** - Azure Form Recognizer adapter integration
-- **[Google Document AI Integration](docs/idp/google-document-ai-integration.md)** - Google Document AI adapter integration
 
 ## 📚 Documentation
 
@@ -346,11 +319,6 @@ Detailed guides for integrating adapter libraries are available in the [docs/gui
 - **[Alfresco Adapter Guide](docs/guides/alfresco-integration.md)** - Alfresco adapter integration (planned)
 - **[MinIO Adapter Guide](docs/guides/minio-integration.md)** - MinIO adapter integration (planned)
 
-### IDP Adapter Guides
-- **[IDP Overview](docs/idp/)** - Intelligent Document Processing overview
-- **[AWS Textract](docs/idp/aws-textract-integration.md)** - AWS Textract adapter (planned)
-- **[Azure Form Recognizer](docs/idp/azure-form-recognizer-integration.md)** - Azure Form Recognizer adapter (planned)
-- **[Google Document AI](docs/idp/google-document-ai-integration.md)** - Google Document AI adapter (planned)
 
 ### Development
 - **[Examples](docs/examples/)** - Working code examples

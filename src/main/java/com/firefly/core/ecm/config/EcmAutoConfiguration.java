@@ -15,7 +15,6 @@
  */
 package com.firefly.core.ecm.config;
 
-import com.firefly.core.ecm.adapter.AdapterRegistry;
 import com.firefly.core.ecm.adapter.AdapterSelector;
 import com.firefly.core.ecm.adapter.noop.NoOpAdapterFactory;
 import com.firefly.core.ecm.port.document.*;
@@ -23,7 +22,6 @@ import com.firefly.core.ecm.port.folder.*;
 import com.firefly.core.ecm.port.security.*;
 import com.firefly.core.ecm.port.audit.*;
 import com.firefly.core.ecm.port.esignature.*;
-import com.firefly.core.ecm.port.idp.*;
 import com.firefly.core.ecm.service.EcmPortProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -394,98 +392,4 @@ public class EcmAutoConfiguration {
             .orElseGet(noOpAdapterFactory::createSignatureProofPort);
     }
 
-    /**
-     * Configures the document extraction port for text extraction and OCR operations.
-     *
-     * <p>This bean is only created when the {@code idp} feature is explicitly enabled.
-     * The document extraction port provides functionality for extracting text and other content
-     * from documents using various IDP technologies such as OCR, handwriting recognition,
-     * and advanced text analysis.</p>
-     *
-     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
-     * to prevent application startup failures while clearly indicating that the
-     * functionality is not available.</p>
-     *
-     * @param portProvider the ECM port provider
-     * @param noOpAdapterFactory factory for creating no-op adapters
-     * @return a DocumentExtractionPort implementation (real adapter or no-op fallback)
-     * @see DocumentExtractionPort
-     */
-    @Bean
-    @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DocumentExtractionPort documentExtractionPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
-        return portProvider.getDocumentExtractionPort()
-            .orElseGet(noOpAdapterFactory::createDocumentExtractionPort);
-    }
-
-    /**
-     * Configures the document classification port for document classification and categorization.
-     *
-     * <p>This bean is only created when the {@code idp} feature is explicitly enabled.
-     * The document classification port provides functionality for automatically classifying
-     * and categorizing documents using various IDP technologies such as machine learning
-     * models, rule-based systems, and template matching.</p>
-     *
-     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
-     * to prevent application startup failures while clearly indicating that the
-     * functionality is not available.</p>
-     *
-     * @param portProvider the ECM port provider
-     * @param noOpAdapterFactory factory for creating no-op adapters
-     * @return a DocumentClassificationPort implementation (real adapter or no-op fallback)
-     * @see DocumentClassificationPort
-     */
-    @Bean
-    @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DocumentClassificationPort documentClassificationPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
-        return portProvider.getDocumentClassificationPort()
-            .orElseGet(noOpAdapterFactory::createDocumentClassificationPort);
-    }
-
-    /**
-     * Configures the document validation port for document validation and verification.
-     *
-     * <p>This bean is only created when the {@code idp} feature is explicitly enabled.
-     * The document validation port provides functionality for validating documents and
-     * extracted data using various validation techniques including business rule validation,
-     * format verification, data consistency checks, and compliance validation.</p>
-     *
-     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
-     * to prevent application startup failures while clearly indicating that the
-     * functionality is not available.</p>
-     *
-     * @param portProvider the ECM port provider
-     * @param noOpAdapterFactory factory for creating no-op adapters
-     * @return a DocumentValidationPort implementation (real adapter or no-op fallback)
-     * @see DocumentValidationPort
-     */
-    @Bean
-    @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DocumentValidationPort documentValidationPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
-        return portProvider.getDocumentValidationPort()
-            .orElseGet(noOpAdapterFactory::createDocumentValidationPort);
-    }
-
-    /**
-     * Configures the data extraction port for structured and semi-structured data extraction.
-     *
-     * <p>This bean is only created when the {@code idp} feature is explicitly enabled.
-     * The data extraction port provides functionality for extracting structured data from
-     * documents including forms, tables, key-value pairs, and other organized data elements.</p>
-     *
-     * <p>If no suitable adapter is found, a no-op adapter is provided as a fallback
-     * to prevent application startup failures while clearly indicating that the
-     * functionality is not available.</p>
-     *
-     * @param portProvider the ECM port provider
-     * @param noOpAdapterFactory factory for creating no-op adapters
-     * @return a DataExtractionPort implementation (real adapter or no-op fallback)
-     * @see DataExtractionPort
-     */
-    @Bean
-    @ConditionalOnProperty(prefix = "firefly.ecm.features", name = "idp", havingValue = "true", matchIfMissing = false)
-    public DataExtractionPort dataExtractionPort(EcmPortProvider portProvider, NoOpAdapterFactory noOpAdapterFactory) {
-        return portProvider.getDataExtractionPort()
-            .orElseGet(noOpAdapterFactory::createDataExtractionPort);
-    }
 }

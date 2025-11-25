@@ -66,9 +66,99 @@ public enum ContentType {
     EMAIL,
     
     /**
-     * Web files (HTML, XML, JSON)
+     * Web files (HTML)
      */
     WEB,
+
+    /**
+     * JSON data structures
+     */
+    JSON,
+
+    /**
+     * XML data structures
+     */
+    XML,
+
+    /**
+     * YAML data structures
+     */
+    YAML,
+
+    /**
+     * Comma-Separated Values
+     */
+    CSV,
+
+    /**
+     * Tab-Separated Values
+     */
+    TSV,
+
+    /**
+     * Newline-Delimited JSON
+     */
+    NDJSON,
+
+    /**
+     * Apache Avro binary container
+     */
+    AVRO,
+
+    /**
+     * Apache Parquet columnar storage
+     */
+    PARQUET,
+
+    /**
+     * Apache ORC columnar storage
+     */
+    ORC,
+
+    /**
+     * Protocol Buffers
+     */
+    PROTOBUF,
+
+    /**
+     * Apache Thrift
+     */
+    THRIFT,
+
+    /**
+     * MessagePack binary serialization
+     */
+    MSGPACK,
+
+    /**
+     * Concise Binary Object Representation
+     */
+    CBOR,
+
+    /**
+     * Binary JSON (e.g., MongoDB BSON)
+     */
+    BSON,
+
+    /**
+     * Java .properties key/value format
+     */
+    PROPERTIES,
+
+    /**
+     * TOML configuration format
+     */
+    TOML,
+
+    /**
+     * INI configuration format
+     */
+    INI,
+
+    /**
+     * Generic binary data
+     */
+    BINARY,
     
     /**
      * Code files (JAVA, JS, CSS)

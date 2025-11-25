@@ -23,7 +23,6 @@ import com.firefly.core.ecm.port.folder.*;
 import com.firefly.core.ecm.port.security.*;
 import com.firefly.core.ecm.port.audit.*;
 import com.firefly.core.ecm.port.esignature.*;
-import com.firefly.core.ecm.port.idp.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -452,130 +451,6 @@ public class EcmPortProvider {
         }
         if (port.isEmpty()) {
             log.warn("No SignatureProofPort adapter found (provider='{}', adapterType='{}').", esignProvider, ecmProperties.getAdapterType());
-        }
-        return port;
-    }
-
-    /**
-     * Retrieves a DocumentExtractionPort implementation for text extraction and OCR operations.
-     *
-     * <p>The DocumentExtractionPort provides functionality for extracting text and other content
-     * from documents using various IDP technologies such as Optical Character Recognition (OCR),
-     * handwriting recognition, and advanced text analysis. This includes both synchronous and
-     * asynchronous processing patterns for real-time and batch processing scenarios.</p>
-     *
-     * <p>If no suitable adapter is found for the configured adapter type, a warning
-     * is logged and an empty Optional is returned, allowing the application to
-     * gracefully handle the absence of document extraction capabilities.</p>
-     *
-     * @return an Optional containing the DocumentExtractionPort implementation if available,
-     *         or empty if no suitable adapter is found
-     * @see DocumentExtractionPort
-     * @see AdapterSelector#selectAdapter(String, Class)
-     */
-    public Optional<DocumentExtractionPort> getDocumentExtractionPort() {
-        Optional<DocumentExtractionPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentExtractionPort.class);
-        if (port.isEmpty()) {
-            log.warn("No DocumentExtractionPort adapter found for type: '{}'. " +
-                    "A no-op adapter will be used as fallback. " +
-                    "To enable document extraction features, configure a suitable IDP adapter (e.g., aws-textract, azure-form-recognizer) " +
-                    "in your application properties under 'firefly.ecm.adapter-type'.",
-                    ecmProperties.getAdapterType());
-        } else {
-            log.debug("DocumentExtractionPort adapter found: {}", port.get().getClass().getSimpleName());
-        }
-        return port;
-    }
-
-    /**
-     * Retrieves a DocumentClassificationPort implementation for document classification and categorization.
-     *
-     * <p>The DocumentClassificationPort provides functionality for automatically classifying and
-     * categorizing documents using various IDP technologies such as machine learning models,
-     * rule-based systems, and template matching. This includes document type identification,
-     * content categorization, and confidence scoring.</p>
-     *
-     * <p>If no suitable adapter is found for the configured adapter type, a warning
-     * is logged and an empty Optional is returned, allowing the application to
-     * gracefully handle the absence of document classification capabilities.</p>
-     *
-     * @return an Optional containing the DocumentClassificationPort implementation if available,
-     *         or empty if no suitable adapter is found
-     * @see DocumentClassificationPort
-     * @see AdapterSelector#selectAdapter(String, Class)
-     */
-    public Optional<DocumentClassificationPort> getDocumentClassificationPort() {
-        Optional<DocumentClassificationPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentClassificationPort.class);
-        if (port.isEmpty()) {
-            log.warn("No DocumentClassificationPort adapter found for type: '{}'. " +
-                    "A no-op adapter will be used as fallback. " +
-                    "To enable document classification features, configure a suitable IDP adapter " +
-                    "in your application properties under 'firefly.ecm.adapter-type'.",
-                    ecmProperties.getAdapterType());
-        } else {
-            log.debug("DocumentClassificationPort adapter found: {}", port.get().getClass().getSimpleName());
-        }
-        return port;
-    }
-
-    /**
-     * Retrieves a DocumentValidationPort implementation for document validation and verification.
-     *
-     * <p>The DocumentValidationPort provides functionality for validating documents and extracted
-     * data using various validation techniques including business rule validation, format
-     * verification, data consistency checks, and compliance validation. This supports multiple
-     * validation levels from basic format checks to comprehensive compliance validation.</p>
-     *
-     * <p>If no suitable adapter is found for the configured adapter type, a warning
-     * is logged and an empty Optional is returned, allowing the application to
-     * gracefully handle the absence of document validation capabilities.</p>
-     *
-     * @return an Optional containing the DocumentValidationPort implementation if available,
-     *         or empty if no suitable adapter is found
-     * @see DocumentValidationPort
-     * @see AdapterSelector#selectAdapter(String, Class)
-     */
-    public Optional<DocumentValidationPort> getDocumentValidationPort() {
-        Optional<DocumentValidationPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DocumentValidationPort.class);
-        if (port.isEmpty()) {
-            log.warn("No DocumentValidationPort adapter found for type: '{}'. " +
-                    "A no-op adapter will be used as fallback. " +
-                    "To enable document validation features, configure a suitable IDP adapter " +
-                    "in your application properties under 'firefly.ecm.adapter-type'.",
-                    ecmProperties.getAdapterType());
-        } else {
-            log.debug("DocumentValidationPort adapter found: {}", port.get().getClass().getSimpleName());
-        }
-        return port;
-    }
-
-    /**
-     * Retrieves a DataExtractionPort implementation for structured and semi-structured data extraction.
-     *
-     * <p>The DataExtractionPort provides functionality for extracting structured data from documents
-     * including forms, tables, key-value pairs, and other organized data elements. This focuses
-     * on understanding document structure and extracting meaningful data relationships rather
-     * than just raw text extraction.</p>
-     *
-     * <p>If no suitable adapter is found for the configured adapter type, a warning
-     * is logged and an empty Optional is returned, allowing the application to
-     * gracefully handle the absence of structured data extraction capabilities.</p>
-     *
-     * @return an Optional containing the DataExtractionPort implementation if available,
-     *         or empty if no suitable adapter is found
-     * @see DataExtractionPort
-     * @see AdapterSelector#selectAdapter(String, Class)
-     */
-    public Optional<DataExtractionPort> getDataExtractionPort() {
-        Optional<DataExtractionPort> port = adapterSelector.selectAdapter(ecmProperties.getAdapterType(), DataExtractionPort.class);
-        if (port.isEmpty()) {
-            log.warn("No DataExtractionPort adapter found for type: '{}'. " +
-                    "A no-op adapter will be used as fallback. " +
-                    "To enable structured data extraction features, configure a suitable IDP adapter " +
-                    "in your application properties under 'firefly.ecm.adapter-type'.",
-                    ecmProperties.getAdapterType());
-        } else {
-            log.debug("DataExtractionPort adapter found: {}", port.get().getClass().getSimpleName());
         }
         return port;
     }

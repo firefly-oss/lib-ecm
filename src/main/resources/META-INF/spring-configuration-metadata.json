@@ -140,12 +140,6 @@
       "defaultValue": false
     },
     {
-      "name": "firefly.ecm.features.idp",
-      "type": "java.lang.Boolean",
-      "description": "Enable Intelligent Document Processing (IDP) features.",
-      "defaultValue": false
-    },
-    {
       "name": "firefly.ecm.defaults.max-file-size-mb",
       "type": "java.lang.Long",
       "description": "Maximum file size in megabytes.",
